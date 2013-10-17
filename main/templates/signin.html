@@ -44,6 +44,13 @@
           Sign in with Bitbucket
         </a>
       # endif
+
+      # if config.CONFIG_DB.vk_app_id and config.CONFIG_DB.vk_app_secret
+        <a class="btn btn-block btn-lg btn-vk" href="{{vk_signin_url}}">
+          <i class="icon icon-vk"></i>
+          Sign in with VK
+        </a>
+      # endif
     </div>
   </div>
 # endblock
