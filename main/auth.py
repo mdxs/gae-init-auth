@@ -479,7 +479,7 @@ def retrieve_user_from_vk(response):
 
   create_user_db(
     response['user_name'],
-    response['vk_id'],
+    user_id,
     vk_id=user_id
   )
   return user_db
