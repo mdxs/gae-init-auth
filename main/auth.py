@@ -5,6 +5,7 @@ from google.appengine.api import users
 
 import functools
 
+import unidecode
 import flask
 from flaskext import login
 from flaskext import oauth
@@ -479,7 +480,7 @@ def retrieve_user_from_vk(response):
 
   create_user_db(
     response['user_name'],
-    user_id,
+    unidecode.unidecode(response['user_name']),
     vk_id=user_id
   )
   return user_db
