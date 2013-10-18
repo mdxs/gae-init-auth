@@ -26,6 +26,8 @@ class ConfigUpdateForm(wtf.Form):
   github_client_secret = wtf.TextField('GitHub Client Secret', filters=[util.strip_filter])
   twitter_consumer_key = wtf.TextField('Twitter Consumer Key', filters=[util.strip_filter])
   twitter_consumer_secret = wtf.TextField('Twitter Consumer Secret', filters=[util.strip_filter])
+  vk_app_id = wtf.TextField('VKontakte App ID', filters=[util.strip_filter])
+  vk_app_secret = wtf.TextField('VKontakte App Secret', filters=[util.strip_filter])
 
 
 @app.route('/_s/admin/config/', endpoint='admin_config_update_service')

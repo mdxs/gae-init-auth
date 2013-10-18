@@ -40,6 +40,8 @@ class Config(Base, modelx.ConfigX):
   github_client_secret = ndb.StringProperty(default='')
   twitter_consumer_key = ndb.StringProperty(default='')
   twitter_consumer_secret = ndb.StringProperty(default='')
+  vk_app_id = ndb.StringProperty(default='')
+  vk_app_secret = ndb.StringProperty(default='')
 
   _PROPERTIES = Base._PROPERTIES.union({
       'analytics_id',

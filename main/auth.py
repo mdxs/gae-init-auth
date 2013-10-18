@@ -126,6 +126,7 @@ def signin():
   github_signin_url = flask.url_for('signin_github', next=next_url)
   google_signin_url = flask.url_for('signin_google', next=next_url)
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
+  vk_signin_url = flask.url_for('signin_vk', next=next_url)
 
   return flask.render_template(
       'signin.html',
@@ -136,6 +137,7 @@ def signin():
       github_signin_url=github_signin_url,
       google_signin_url=google_signin_url,
       twitter_signin_url=twitter_signin_url,
+      vk_signin_url=vk_signin_url,
       next_url=next_url,
     )
 
@@ -420,6 +422,67 @@ def retrieve_user_from_bitbucket(response):
   else:
     name = response['username']
   return create_user_db(auth_id, name, response['username'])
+
+
+###############################################################################
+# VKontakte
+###############################################################################
+vk_oauth = oauth.OAuth()
+
+vk = vk_oauth.remote_app(
+  'vk',
+  base_url='https://api.vk.com/',
+  request_token_url=None,
+  access_token_url='https://oauth.vk.com/access_token',
+  authorize_url='https://oauth.vk.com/authorize',
+  consumer_key=model.Config.get_master_db().vk_app_id,
+  consumer_secret=model.Config.get_master_db().vk_app_secret
+)
+
+
+@app.route('/_s/callback/vk/oauth-authorized/')
+@vk.authorized_handler
+def vk_authorized(resp):
+  if resp is None:
+    return 'Access denied: error=%s error_description=%s' % (
+      flask.request.args['error'],
+      flask.request.args['error_description']
+    )
+  access_token = resp['access_token']
+  flask.session['oauth_token'] = (access_token, '')
+  me = vk.get('/method/getUserInfoEx', data={'access_token': access_token})
+  user_db = retrieve_user_from_vk(me.data['response'])
+  return signin_user_db(user_db)
+
+
+@vk.tokengetter
+def get_vk_oauth_token():
+  return flask.session.get('oauth_token')
+
+
+@app.route('/signin/vk/')
+def signin_vk():
+  return vk.authorize(
+    callback=flask.url_for(
+      'vk_authorized',
+      next=util.get_next_url(),
+      _external=True
+    )
+  )
+ 
+
+def retrieve_user_from_vk(response):
+  user_id = 'vk_%s' % response['user_id']
+  user_db = model.User.retrieve_one_by('vk_id', user_id)
+  if user_db:
+    return user_db
+
+  create_user_db(
+    response['user_name'],
+    response['vk_id'],
+    vk_id=user_id
+  )
+  return user_db
 
 
 ################################################################################
