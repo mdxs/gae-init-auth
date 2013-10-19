@@ -479,12 +479,11 @@ def retrieve_user_from_vk(response):
   if user_db:
     return user_db
 
-  create_user_db(
+  return create_user_db(
     response['user_name'],
     unidecode.unidecode(response['user_name']),
     vk_id=user_id
   )
-  return user_db
 
 
 ################################################################################
