@@ -407,14 +407,15 @@ def signin_bitbucket():
   flask.session['oauth_token'] = None
   return bitbucket.authorize(
     callback=flask.url_for('bitbucket_authorized',
-      next=util.get_next_url(),
-      _external=True
+        next=util.get_next_url(),
+        _external=True
+      )
     )
-  )
 
 
 def retrieve_user_from_bitbucket(response):
-  user_db = model.User.retrieve_one_by('bitbucket_id', response['username'])
+  auth_id = 'bitbucket_%s' % response['username']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
   if user_db:
     return user_db
   if response['first_name'] or response['last_name']:
@@ -422,9 +423,9 @@ def retrieve_user_from_bitbucket(response):
   else:
     name = response['username']
   return create_user_db(
+      auth_id,
       name,
       response['username'],
-      bitbucket_id=response['username']
     )
 
 
