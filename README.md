@@ -1,14 +1,11 @@
-gae-init
-========
+gae-init-auth
+=============
 
-**gae-init** is the easiest way to start new applications on Google App Engine
-using Flask, Bootstrap and tons of other cool features. 
+**gae-init-auth** is the easiest way to start new applications on Google App Engine
+using Flask, Bootstrap and tons of other cool features.
 
 Read more in the [docs][], where you can find a complete [feature list][],
-a detailed [tutorial][] on how to build a phonebook application and more..
-
-The latest version is always accessible from
-[http://gae-init.appspot.com](http://gae-init.appspot.com)
+a detailed [tutorial][] on how to build a phonebook application and more.
 
 Running the Development Environment
 -----------------------------------
