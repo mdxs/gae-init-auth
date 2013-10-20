@@ -471,18 +471,18 @@ def signin_vk():
       _external=True
     )
   )
- 
+
 
 def retrieve_user_from_vk(response):
-  user_id = 'vk_%s' % response['user_id']
-  user_db = model.User.retrieve_one_by('vk_id', user_id)
+  auth_id = 'vk_%s' % response['user_id']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
   if user_db:
     return user_db
 
   return create_user_db(
+    auth_id,
     response['user_name'],
     unidecode.unidecode(response['user_name']),
-    vk_id=user_id
   )
 
 
