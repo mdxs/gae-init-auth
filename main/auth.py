@@ -121,21 +121,21 @@ def signin():
   if flask.url_for('signin') in next_url:
     next_url = flask.url_for('welcome')
 
-  google_signin_url = flask.url_for('signin_google', next=next_url)
-  twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
+  bitbucket_signin_url = flask.url_for('signin_bitbucket', next=next_url)
   facebook_signin_url = flask.url_for('signin_facebook', next=next_url)
   github_signin_url = flask.url_for('signin_github', next=next_url)
-  bitbucket_signin_url = flask.url_for('signin_bitbucket', next=next_url)
+  google_signin_url = flask.url_for('signin_google', next=next_url)
+  twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
 
   return flask.render_template(
       'signin.html',
       title='Please sign in',
       html_class='signin',
-      google_signin_url=google_signin_url,
-      twitter_signin_url=twitter_signin_url,
+      bitbucket_signin_url=bitbucket_signin_url,
       facebook_signin_url=facebook_signin_url,
       github_signin_url=github_signin_url,
-      bitbucket_signin_url=bitbucket_signin_url,
+      google_signin_url=google_signin_url,
+      twitter_signin_url=twitter_signin_url,
       next_url=next_url,
     )
 
@@ -229,8 +229,7 @@ def signin_twitter():
   flask.session.pop('oauth_token', None)
   try:
     return twitter.authorize(
-        callback=flask.url_for('twitter_authorized',
-        next=util.get_next_url()),
+        callback=flask.url_for('twitter_authorized', next=util.get_next_url()),
       )
   except:
     flask.flash(
@@ -386,7 +385,6 @@ bitbucket = bitbucket_oauth.remote_app(
 @app.route('/_s/callback/bitbucket/oauth-authorized/')
 @bitbucket.authorized_handler
 def bitbucket_authorized(resp):
-  print resp
   if resp is None:
     return 'Access denied'
   flask.session['oauth_token'] = (
@@ -421,11 +419,7 @@ def retrieve_user_from_bitbucket(response):
     name = ' '.join((response['first_name'], response['last_name'])).strip()
   else:
     name = response['username']
-  return create_user_db(
-      auth_id,
-      name,
-      response['username'],
-    )
+  return create_user_db(auth_id, name, response['username'])
 
 
 ################################################################################
