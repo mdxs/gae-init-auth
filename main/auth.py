@@ -258,7 +258,6 @@ def retrieve_user_from_twitter(response):
 ################################################################################
 facebook_oauth = oauth.OAuth()
 
-
 facebook = facebook_oauth.remote_app(
     'facebook',
     base_url='https://graph.facebook.com/',
@@ -315,7 +314,6 @@ def retrieve_user_from_facebook(response):
 # GitHub
 ################################################################################
 github_oauth = oauth.OAuth()
-
 
 github = github_oauth.remote_app(
     'github',
