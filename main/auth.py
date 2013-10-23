@@ -325,7 +325,7 @@ github = github_oauth.remote_app(
     authorize_url='https://github.com/login/oauth/authorize',
     consumer_key=config.CONFIG_DB.github_client_id,
     consumer_secret=config.CONFIG_DB.github_client_secret,
-    request_token_params={'scope': 'user:email'}
+    request_token_params={'scope': 'user:email'},
   )
 
 
@@ -348,11 +348,11 @@ def get_github_oauth_token():
 @app.route('/signin/github/')
 def signin_github():
   return github.authorize(
-    callback=flask.url_for('github_authorized',
-      next=util.get_next_url(),
-      _external=True
+      callback=flask.url_for('github_authorized',
+          next=util.get_next_url(),
+          _external=True,
+        )
     )
-  )
 
 
 def retrieve_user_from_github(response):
@@ -373,7 +373,6 @@ def retrieve_user_from_github(response):
 ################################################################################
 bitbucket_oauth = oauth.OAuth()
 
-
 bitbucket = bitbucket_oauth.remote_app(
     'bitbucket',
     base_url='https://api.bitbucket.org/1.0/',
@@ -381,7 +380,7 @@ bitbucket = bitbucket_oauth.remote_app(
     access_token_url='https://bitbucket.org/!api/1.0/oauth/access_token',
     authorize_url='https://bitbucket.org/!api/1.0/oauth/authenticate',
     consumer_key=config.CONFIG_DB.bitbucket_key,
-    consumer_secret=config.CONFIG_DB.bitbucket_secret
+    consumer_secret=config.CONFIG_DB.bitbucket_secret,
   )
 
 
@@ -406,10 +405,10 @@ def get_bitbucket_oauth_token():
 def signin_bitbucket():
   flask.session['oauth_token'] = None
   return bitbucket.authorize(
-    callback=flask.url_for('bitbucket_authorized',
-        next=util.get_next_url(),
-        _external=True
-      )
+      callback=flask.url_for('bitbucket_authorized',
+          next=util.get_next_url(),
+          _external=True,
+        )
     )
 
 
@@ -426,19 +425,19 @@ def retrieve_user_from_bitbucket(response):
 
 
 ###############################################################################
-# VKontakte
+# VK
 ###############################################################################
 vk_oauth = oauth.OAuth()
 
 vk = vk_oauth.remote_app(
-  'vk',
-  base_url='https://api.vk.com/',
-  request_token_url=None,
-  access_token_url='https://oauth.vk.com/access_token',
-  authorize_url='https://oauth.vk.com/authorize',
-  consumer_key=model.Config.get_master_db().vk_app_id,
-  consumer_secret=model.Config.get_master_db().vk_app_secret
-)
+    'vk',
+    base_url='https://api.vk.com/',
+    request_token_url=None,
+    access_token_url='https://oauth.vk.com/access_token',
+    authorize_url='https://oauth.vk.com/authorize',
+    consumer_key=model.Config.get_master_db().vk_app_id,
+    consumer_secret=model.Config.get_master_db().vk_app_secret,
+  )
 
 
 @app.route('/_s/callback/vk/oauth-authorized/')
@@ -446,9 +445,9 @@ vk = vk_oauth.remote_app(
 def vk_authorized(resp):
   if resp is None:
     return 'Access denied: error=%s error_description=%s' % (
-      flask.request.args['error'],
-      flask.request.args['error_description']
-    )
+        flask.request.args['error'],
+        flask.request.args['error_description'],
+      )
   access_token = resp['access_token']
   flask.session['oauth_token'] = (access_token, '')
   me = vk.get('/method/getUserInfoEx', data={'access_token': access_token})
@@ -464,13 +463,13 @@ def get_vk_oauth_token():
 @app.route('/signin/vk/')
 def signin_vk():
   return vk.authorize(
-    callback=flask.url_for(
-      'vk_authorized',
-      scope='notify',
-      next=util.get_next_url(),
-      _external=True
+      callback=flask.url_for(
+          'vk_authorized',
+          scope='notify',
+          next=util.get_next_url(),
+          _external=True,
+        )
     )
-  )
 
 
 def retrieve_user_from_vk(response):
@@ -480,10 +479,10 @@ def retrieve_user_from_vk(response):
     return user_db
 
   return create_user_db(
-    auth_id,
-    response['user_name'],
-    unidecode.unidecode(response['user_name']),
-  )
+      auth_id,
+      response['user_name'],
+      unidecode.unidecode(response['user_name']),
+    )
 
 
 ################################################################################
