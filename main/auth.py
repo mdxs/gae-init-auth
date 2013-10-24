@@ -126,6 +126,7 @@ def signin():
   facebook_signin_url = flask.url_for('signin_facebook', next=next_url)
   github_signin_url = flask.url_for('signin_github', next=next_url)
   google_signin_url = flask.url_for('signin_google', next=next_url)
+  linkedin_signin_url = ''
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
 
@@ -137,6 +138,7 @@ def signin():
       facebook_signin_url=facebook_signin_url,
       github_signin_url=github_signin_url,
       google_signin_url=google_signin_url,
+      linkedin_signin_url=linkedin_signin_url,
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
       next_url=next_url,
