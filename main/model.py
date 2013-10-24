@@ -38,6 +38,8 @@ class Config(Base, modelx.ConfigX):
   flask_secret_key = ndb.StringProperty(default=str(uuid4()).replace('-', ''))
   github_client_id = ndb.StringProperty(default='')
   github_client_secret = ndb.StringProperty(default='')
+  linkedin_api_key = ndb.StringProperty(default='')
+  linkedin_secret_key = ndb.StringProperty(default='')
   twitter_consumer_key = ndb.StringProperty(default='')
   twitter_consumer_secret = ndb.StringProperty(default='')
   vk_app_id = ndb.StringProperty(default='')
@@ -56,6 +58,8 @@ class Config(Base, modelx.ConfigX):
       'flask_secret_key',
       'github_client_id',
       'github_client_secret',
+      'linkedin_api_key',
+      'linkedin_secret_key',
       'twitter_consumer_key',
       'twitter_consumer_secret',
     })
