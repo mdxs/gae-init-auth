@@ -2,8 +2,10 @@
 
 from google.appengine.ext import ndb
 from google.appengine.api import users
+from google.appengine.api import urlfetch
 
 import functools
+from uuid import uuid4
 
 import unidecode
 import flask
@@ -126,7 +128,7 @@ def signin():
   facebook_signin_url = flask.url_for('signin_facebook', next=next_url)
   github_signin_url = flask.url_for('signin_github', next=next_url)
   google_signin_url = flask.url_for('signin_google', next=next_url)
-  linkedin_signin_url = ''
+  linkedin_signin_url = flask.url_for('signin_linkedin', next=next_url)
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
 
@@ -484,6 +486,85 @@ def retrieve_user_from_vk(response):
       auth_id,
       response['user_name'],
       unidecode.unidecode(response['user_name']),
+    )
+
+
+################################################################################
+# LinkedIn
+################################################################################
+linkedin_oauth = oauth.OAuth()
+
+linkedin = linkedin_oauth.remote_app(
+    'linkedin',
+    base_url='https://api.linkedin.com/v1/',
+    request_token_url=None,
+    access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
+    access_token_params={'grant_type': 'authorization_code'},
+    access_token_method='POST',
+    authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
+    consumer_key=config.CONFIG_DB.linkedin_api_key,
+    consumer_secret=config.CONFIG_DB.linkedin_secret_key,
+    request_token_params={
+        'scope': 'r_basicprofile r_emailaddress',
+        'state': str(uuid4()).replace('-', ''),
+    },
+  )
+
+
+@app.route('/_s/callback/linkedin/oauth-authorized/')
+@linkedin.authorized_handler
+def linkedin_authorized(resp):
+  if resp is None:
+    return 'Access denied: error=%s error_description=%s' % (
+      flask.request.args['error'],
+      flask.request.args['error_description'],
+    )
+  flask.session['access_token'] = (resp['access_token'], '')
+  fields = 'id,first-name,last-name,email-address'
+  profile_url = linkedin.base_url + \
+      'people/~:(%s)?oauth2_access_token=%s' % (fields, (resp['access_token']))
+  result = urlfetch.fetch(
+      profile_url,
+      headers={'x-li-format': 'json', 'Content-Type': 'application/json'}
+    )
+  try:
+    content = flask.json.loads(result.content)
+  except ValueError:
+    return "Unknown error: invalid response from LinkedIn"
+  if result.status_code != 200:
+    print content
+    return 'Unknown error: status=%s message=%s' % (
+        content['status'], content['message']
+      )
+  user_db = retrieve_user_from_linkedin(content)
+  return signin_user_db(user_db)
+
+
+@linkedin.tokengetter
+def get_linkedin_oauth_token():
+  return flask.session.get('access_token')
+
+
+@app.route('/signin/linkedin/')
+def signin_linkedin():
+  flask.session['access_token'] = None
+  return linkedin.authorize(callback=flask.url_for('linkedin_authorized',
+      next=util.get_next_url(),
+      _external=True),
+    )
+
+
+def retrieve_user_from_linkedin(response):
+  auth_id = 'linkedin_%s' % response['id']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  if user_db:
+    return user_db
+  full_name = ' '.join([response['firstName'], response['lastName']]).strip()
+  return create_user_db(
+      auth_id,
+      full_name,
+      response['emailAddress'] or unidecode.unidecode(full_name),
+      response['emailAddress'],
     )
 
 
