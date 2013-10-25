@@ -24,6 +24,13 @@
         </a>
       # endif
 
+      # if config.CONFIG_DB.dropbox_app_key and config.CONFIG_DB.dropbox_app_secret
+        <a class="btn btn-block btn-lg btn-dropbox" href="{{dropbox_signin_url}}" rel="nofollow">
+          <i class="fa fa-dropbox"></i>
+          Sign in with Dropbox
+        </a>
+      # endif
+
       # if config.CONFIG_DB.twitter_consumer_key and config.CONFIG_DB.twitter_consumer_secret
         <a class="btn btn-block btn-lg btn-twitter" href="{{twitter_signin_url}}" rel="nofollow">
           <i class="fa fa-twitter"></i>
