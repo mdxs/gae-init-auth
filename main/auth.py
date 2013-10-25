@@ -522,7 +522,7 @@ def linkedin_authorized(resp):
   flask.session['access_token'] = (resp['access_token'], '')
   fields = 'id,first-name,last-name,email-address'
   profile_url = linkedin.base_url + \
-      'people/~:(%s)?oauth2_access_token=%s' % (fields, (resp['access_token']))
+      'people/~:(%s)?oauth2_access_token=%s' % (fields, resp['access_token'])
   result = urlfetch.fetch(
       profile_url,
       headers={'x-li-format': 'json', 'Content-Type': 'application/json'}
@@ -532,7 +532,6 @@ def linkedin_authorized(resp):
   except ValueError:
     return "Unknown error: invalid response from LinkedIn"
   if result.status_code != 200:
-    print content
     return 'Unknown error: status=%s message=%s' % (
         content['status'], content['message']
       )
