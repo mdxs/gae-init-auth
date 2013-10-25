@@ -32,6 +32,8 @@ class Config(Base, modelx.ConfigX):
   bitbucket_key = ndb.StringProperty(default='')
   bitbucket_secret = ndb.StringProperty(default='')
   brand_name = ndb.StringProperty(default='gae-init')
+  dropbox_app_key = ndb.StringProperty(default='')
+  dropbox_app_secret = ndb.StringProperty(default='')
   facebook_app_id = ndb.StringProperty(default='')
   facebook_app_secret = ndb.StringProperty(default='')
   feedback_email = ndb.StringProperty(default='')
@@ -52,6 +54,8 @@ class Config(Base, modelx.ConfigX):
       'bitbucket_key',
       'bitbucket_secret',
       'brand_name',
+      'dropbox_app_key',
+      'dropbox_app_secret',
       'facebook_app_id',
       'facebook_app_secret',
       'feedback_email',
