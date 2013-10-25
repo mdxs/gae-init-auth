@@ -124,6 +124,7 @@ def signin():
     next_url = flask.url_for('welcome')
 
   bitbucket_signin_url = flask.url_for('signin_bitbucket', next=next_url)
+  dropbox_signin_url = flask.url_for('signin_dropbox', next=next_url)
   facebook_signin_url = flask.url_for('signin_facebook', next=next_url)
   github_signin_url = flask.url_for('signin_github', next=next_url)
   google_signin_url = flask.url_for('signin_google', next=next_url)
@@ -136,6 +137,7 @@ def signin():
       title='Please sign in',
       html_class='signin',
       bitbucket_signin_url=bitbucket_signin_url,
+      dropbox_signin_url=dropbox_signin_url,
       facebook_signin_url=facebook_signin_url,
       github_signin_url=github_signin_url,
       google_signin_url=google_signin_url,
@@ -425,6 +427,70 @@ def retrieve_user_from_bitbucket(response):
   else:
     name = response['username']
   return create_user_db(auth_id, name, response['username'])
+
+
+###############################################################################
+# Dropbox
+###############################################################################
+dropbox_oauth = oauth.OAuth()
+
+dropbox = dropbox_oauth.remote_app(
+    'dropbox',
+    base_url='https://api.dropbox.com/1/',
+    request_token_url=None,
+    access_token_url='https://api.dropbox.com/1/oauth2/token',
+    access_token_method='POST',
+    access_token_params = {'grant_type': 'authorization_code'},
+    authorize_url='https://www.dropbox.com/1/oauth2/authorize',
+    consumer_key=model.Config.get_master_db().dropbox_app_key,
+    consumer_secret=model.Config.get_master_db().dropbox_app_secret,
+  )
+
+
+@app.route('/_s/callback/dropbox/oauth-authorized/')
+@dropbox.authorized_handler
+def dropbox_authorized(resp):
+  if resp is None:
+    return 'Access denied: error=%s error_description=%s' % (
+        flask.request.args['error'],
+        flask.request.args['error_description'],
+      )
+  flask.session['oauth_token'] = (resp['access_token'], '')
+  me = dropbox.get(
+      'account/info',
+      headers={'Authorization': 'Bearer %s' % resp['access_token']}
+    )
+  user_db = retrieve_user_from_dropbox(me.data)
+  return signin_user_db(user_db)
+
+
+@dropbox.tokengetter
+def get_dropbox_oauth_token():
+  return flask.session.get('oauth_token')
+
+
+@app.route('/signin/dropbox/')
+def signin_dropbox():
+  flask.session['oauth_token'] = None
+  return dropbox.authorize(
+      callback=flask.url_for(
+          'dropbox_authorized',
+          _external=True,
+        )
+    )
+
+
+def retrieve_user_from_dropbox(response):
+  auth_id = 'dropbox_%s' % response['uid']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  if user_db:
+    return user_db
+
+  return create_user_db(
+      auth_id,
+      response['display_name'],
+      unidecode.unidecode(response['display_name']),
+    )
 
 
 ###############################################################################
