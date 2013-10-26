@@ -5,7 +5,6 @@ from google.appengine.api import users
 from google.appengine.api import urlfetch
 
 import functools
-from uuid import uuid4
 
 import unidecode
 import flask
@@ -506,7 +505,7 @@ linkedin = linkedin_oauth.remote_app(
     consumer_secret=config.CONFIG_DB.linkedin_secret_key,
     request_token_params={
         'scope': 'r_basicprofile r_emailaddress',
-        'state': str(uuid4()).replace('-', ''),
+        'state': util.uuid(),
     },
   )
 
