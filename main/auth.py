@@ -420,7 +420,7 @@ def signin_dropbox():
       callback=flask.url_for(
           'dropbox_authorized',
           _external=True,
-        ).repalce('http', 'https')
+        ).replace('http', 'https')
     )
 
 
