@@ -6,6 +6,7 @@ from google.appengine.api import urlfetch
 
 import functools
 
+import re
 import unidecode
 import flask
 from flaskext import login
@@ -417,10 +418,9 @@ def get_dropbox_oauth_token():
 def signin_dropbox():
   flask.session['oauth_token'] = None
   return dropbox.authorize(
-      callback=flask.url_for(
-          'dropbox_authorized',
-          _external=True,
-        ).replace('http', 'https')
+      callback=re.sub(r'^http:', 'https:',
+          flask.url_for('dropbox_authorized', _external=True)
+        )
     )
 
 
