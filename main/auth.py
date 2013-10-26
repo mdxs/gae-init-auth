@@ -506,7 +506,7 @@ linkedin = linkedin_oauth.remote_app(
     request_token_params={
         'scope': 'r_basicprofile r_emailaddress',
         'state': util.uuid(),
-    },
+      },
   )
 
 
@@ -515,13 +515,14 @@ linkedin = linkedin_oauth.remote_app(
 def linkedin_authorized(resp):
   if resp is None:
     return 'Access denied: error=%s error_description=%s' % (
-      flask.request.args['error'],
-      flask.request.args['error_description'],
-    )
+        flask.request.args['error'],
+        flask.request.args['error_description'],
+      )
   flask.session['access_token'] = (resp['access_token'], '')
   fields = 'id,first-name,last-name,email-address'
-  profile_url = linkedin.base_url + \
-      'people/~:(%s)?oauth2_access_token=%s' % (fields, resp['access_token'])
+  profile_url = '%speople/~:(%s)?oauth2_access_token=%s' % (
+      linkedin.base_url, fields, resp['access_token'],
+    )
   result = urlfetch.fetch(
       profile_url,
       headers={'x-li-format': 'json', 'Content-Type': 'application/json'}
@@ -532,7 +533,7 @@ def linkedin_authorized(resp):
     return "Unknown error: invalid response from LinkedIn"
   if result.status_code != 200:
     return 'Unknown error: status=%s message=%s' % (
-        content['status'], content['message']
+        content['status'], content['message'],
       )
   user_db = retrieve_user_from_linkedin(content)
   return signin_user_db(user_db)
@@ -546,9 +547,12 @@ def get_linkedin_oauth_token():
 @app.route('/signin/linkedin/')
 def signin_linkedin():
   flask.session['access_token'] = None
-  return linkedin.authorize(callback=flask.url_for('linkedin_authorized',
-      next=util.get_next_url(),
-      _external=True),
+  return linkedin.authorize(
+      callback=flask.url_for(
+          'linkedin_authorized',
+          next=util.get_next_url(),
+          _external=True,
+        ),
     )
 
 
