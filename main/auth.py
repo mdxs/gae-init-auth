@@ -318,62 +318,6 @@ def retrieve_user_from_facebook(response):
 
 
 ################################################################################
-# GitHub
-################################################################################
-github_oauth = oauth.OAuth()
-
-github = github_oauth.remote_app(
-    'github',
-    base_url='https://api.github.com/',
-    request_token_url=None,
-    access_token_url='https://github.com/login/oauth/access_token',
-    authorize_url='https://github.com/login/oauth/authorize',
-    consumer_key=config.CONFIG_DB.github_client_id,
-    consumer_secret=config.CONFIG_DB.github_client_secret,
-    request_token_params={'scope': 'user:email'},
-  )
-
-
-@app.route('/_s/callback/github/oauth-authorized/')
-@github.authorized_handler
-def github_authorized(resp):
-  if resp is None:
-    return 'Access denied: error=%s' % flask.request.args['error']
-  flask.session['oauth_token'] = (resp['access_token'], '')
-  me = github.get('user')
-  user_db = retrieve_user_from_github(me.data)
-  return signin_user_db(user_db)
-
-
-@github.tokengetter
-def get_github_oauth_token():
-  return flask.session.get('oauth_token')
-
-
-@app.route('/signin/github/')
-def signin_github():
-  return github.authorize(
-      callback=flask.url_for('github_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        )
-    )
-
-
-def retrieve_user_from_github(response):
-  auth_id = 'github_%s' % str(response['id'])
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
-  if user_db:
-    return user_db
-  return create_user_db(
-      auth_id,
-      response['name'] or response['login'],
-      response['login'],
-      response['email'] or '',
-    )
-
-
-################################################################################
 # Bitbucket
 ################################################################################
 bitbucket_oauth = oauth.OAuth()
@@ -493,64 +437,59 @@ def retrieve_user_from_dropbox(response):
     )
 
 
-###############################################################################
-# VK
-###############################################################################
-vk_oauth = oauth.OAuth()
+################################################################################
+# GitHub
+################################################################################
+github_oauth = oauth.OAuth()
 
-vk = vk_oauth.remote_app(
-    'vk',
-    base_url='https://api.vk.com/',
+github = github_oauth.remote_app(
+    'github',
+    base_url='https://api.github.com/',
     request_token_url=None,
-    access_token_url='https://oauth.vk.com/access_token',
-    authorize_url='https://oauth.vk.com/authorize',
-    consumer_key=model.Config.get_master_db().vk_app_id,
-    consumer_secret=model.Config.get_master_db().vk_app_secret,
+    access_token_url='https://github.com/login/oauth/access_token',
+    authorize_url='https://github.com/login/oauth/authorize',
+    consumer_key=config.CONFIG_DB.github_client_id,
+    consumer_secret=config.CONFIG_DB.github_client_secret,
+    request_token_params={'scope': 'user:email'},
   )
 
 
-@app.route('/_s/callback/vk/oauth-authorized/')
-@vk.authorized_handler
-def vk_authorized(resp):
+@app.route('/_s/callback/github/oauth-authorized/')
+@github.authorized_handler
+def github_authorized(resp):
   if resp is None:
-    return 'Access denied: error=%s error_description=%s' % (
-        flask.request.args['error'],
-        flask.request.args['error_description'],
-      )
-  access_token = resp['access_token']
-  flask.session['oauth_token'] = (access_token, '')
-  me = vk.get('/method/getUserInfoEx', data={'access_token': access_token})
-  user_db = retrieve_user_from_vk(me.data['response'])
+    return 'Access denied: error=%s' % flask.request.args['error']
+  flask.session['oauth_token'] = (resp['access_token'], '')
+  me = github.get('user')
+  user_db = retrieve_user_from_github(me.data)
   return signin_user_db(user_db)
 
 
-@vk.tokengetter
-def get_vk_oauth_token():
+@github.tokengetter
+def get_github_oauth_token():
   return flask.session.get('oauth_token')
 
 
-@app.route('/signin/vk/')
-def signin_vk():
-  return vk.authorize(
-      callback=flask.url_for(
-          'vk_authorized',
-          scope='notify',
+@app.route('/signin/github/')
+def signin_github():
+  return github.authorize(
+      callback=flask.url_for('github_authorized',
           next=util.get_next_url(),
           _external=True,
         )
     )
 
 
-def retrieve_user_from_vk(response):
-  auth_id = 'vk_%s' % response['user_id']
+def retrieve_user_from_github(response):
+  auth_id = 'github_%s' % str(response['id'])
   user_db = model.User.retrieve_one_by('auth_ids', auth_id)
   if user_db:
     return user_db
-
   return create_user_db(
       auth_id,
-      response['user_name'],
-      unidecode.unidecode(response['user_name']),
+      response['name'] or response['login'],
+      response['login'],
+      response['email'] or '',
     )
 
 
@@ -633,6 +572,67 @@ def retrieve_user_from_linkedin(response):
       full_name,
       response['emailAddress'] or unidecode.unidecode(full_name),
       response['emailAddress'],
+    )
+
+
+###############################################################################
+# VK
+###############################################################################
+vk_oauth = oauth.OAuth()
+
+vk = vk_oauth.remote_app(
+    'vk',
+    base_url='https://api.vk.com/',
+    request_token_url=None,
+    access_token_url='https://oauth.vk.com/access_token',
+    authorize_url='https://oauth.vk.com/authorize',
+    consumer_key=model.Config.get_master_db().vk_app_id,
+    consumer_secret=model.Config.get_master_db().vk_app_secret,
+  )
+
+
+@app.route('/_s/callback/vk/oauth-authorized/')
+@vk.authorized_handler
+def vk_authorized(resp):
+  if resp is None:
+    return 'Access denied: error=%s error_description=%s' % (
+        flask.request.args['error'],
+        flask.request.args['error_description'],
+      )
+  access_token = resp['access_token']
+  flask.session['oauth_token'] = (access_token, '')
+  me = vk.get('/method/getUserInfoEx', data={'access_token': access_token})
+  user_db = retrieve_user_from_vk(me.data['response'])
+  return signin_user_db(user_db)
+
+
+@vk.tokengetter
+def get_vk_oauth_token():
+  return flask.session.get('oauth_token')
+
+
+@app.route('/signin/vk/')
+def signin_vk():
+  return vk.authorize(
+      callback=flask.url_for(
+          'vk_authorized',
+          scope='notify',
+          next=util.get_next_url(),
+          _external=True,
+        )
+    )
+
+
+def retrieve_user_from_vk(response):
+  auth_id = 'vk_%s' % response['user_id']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  if user_db:
+    return user_db
+
+  return create_user_db(
+      auth_id,
+      response['user_name'],
+      unidecode.unidecode(response['user_name']),
     )
 
 
