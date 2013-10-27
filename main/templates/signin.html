@@ -66,6 +66,13 @@
         </a>
       # endif
 
+      # if config.CONFIG_DB.soverflow_client_id and config.CONFIG_DB.soverflow_client_secret
+        <a class="btn btn-block btn-lg btn-soverflow" href="{{soverflow_signin_url}}" rel="nofollow">
+          <i class="fa fa-stack-overflow"></i>
+          Sign in with Stack Overflow
+        </a>
+      # endif
+
       # if config.CONFIG_DB.windowslive_client_id and config.CONFIG_DB.windowslive_client_secret
         <a class="btn btn-block btn-lg btn-social btn-windowslive" href="{{windowslive_signin_url}}" rel="nofollow">
           <i class="fa fa-windows"></i>
