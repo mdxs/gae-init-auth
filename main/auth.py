@@ -701,11 +701,23 @@ def soverflow_authorized(resp):
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
-  flask.session['oauth_token'] = (resp['oauth_token'], '')
-  me = bitbucket.get('user',
-      data={'site': 'stackoverflow', 'access_token': resp['oauth_token']}
+  flask.session['oauth_token'] = (resp['access_token'], '')
+  me = soverflow.get('me',
+      data={
+          'site': 'stackoverflow',
+          'access_token': resp['access_token'],
+          'key': config.CONFIG_DB.soverflow_key,
+        }
     )
-  user_db = retrieve_user_from_soverflow(me.data)
+  if me.data.get('error_id'):
+    return 'Error: error_id=%s error_name=%s error_description=%s' % (
+        me.data['error_id'],
+        me.data['error_name'],
+        me.data['error_message'],
+      )
+  if not me.data.get('items') or not me.data['items'][0]:
+    return 'Unknown error, invalid server response: %s' % me.data
+  user_db = retrieve_user_from_soverflow(me.data['items'][0])
   return signin_user_db(user_db)
 
 
@@ -734,7 +746,6 @@ def retrieve_user_from_soverflow(response):
       auth_id,
       response['display_name'],
       unidecode.unidecode(response['display_name']),
-      email='%s@stackoverflow.com' % response['display_name']
     )
 
 
