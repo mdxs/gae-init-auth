@@ -33,6 +33,7 @@ class ConfigUpdateForm(wtf.Form):
   reddit_client_secret = wtf.TextField('Reddit Secret', filters=[util.strip_filter])
   soverflow_client_id = wtf.TextField('Stack Overflow Client Id', filters=[util.strip_filter])
   soverflow_client_secret = wtf.TextField('Stack Overflow Client Secret', filters=[util.strip_filter])
+  soverflow_key = wtf.TextField('Stack Overflow Key', filters=[util.strip_filter])
   twitter_consumer_key = wtf.TextField('Twitter Consumer Key', filters=[util.strip_filter])
   twitter_consumer_secret = wtf.TextField('Twitter Consumer Secret', filters=[util.strip_filter])
   vk_app_id = wtf.TextField('VK App ID', filters=[util.strip_filter])
