@@ -133,6 +133,7 @@ def signin():
   google_signin_url = flask.url_for('signin_google', next=next_url)
   linkedin_signin_url = flask.url_for('signin_linkedin', next=next_url)
   reddit_signin_url = flask.url_for('signin_reddit', next=next_url)
+  soverflow_signin_url = flask.url_for('signin_soverflow', next=next_url)
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
   windowslive_signin_url = flask.url_for('signin_windowslive', next=next_url)
@@ -148,6 +149,7 @@ def signin():
       google_signin_url=google_signin_url,
       linkedin_signin_url=linkedin_signin_url,
       reddit_signin_url=reddit_signin_url,
+      soverflow_signin_url=soverflow_signin_url,
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
       windowslive_signin_url=windowslive_signin_url,
@@ -670,6 +672,69 @@ def retrieve_user_from_reddit(response):
       auth_id,
       response['name'],
       unidecode.unidecode(response['name']),
+    )
+
+
+################################################################################
+# Stack Overflow
+################################################################################
+soverflow_oauth = oauth.OAuth()
+
+soverflow = soverflow_oauth.remote_app(
+    'soverflow',
+    base_url='https://api.stackexchange.com/2.1/',
+    request_token_url=None,
+    access_token_url='https://stackexchange.com/oauth/access_token',
+    access_token_method='POST',
+    authorize_url='https://stackexchange.com/oauth',
+    consumer_key=config.CONFIG_DB.soverflow_client_id,
+    consumer_secret=config.CONFIG_DB.soverflow_client_secret,
+    request_token_params={},
+  )
+
+
+@app.route('/_s/callback/soverflow/oauth-authorized/')
+@soverflow.authorized_handler
+def soverflow_authorized(resp):
+  if resp is None:
+    return 'Access denied: error=%s error_description=%s' % (
+        flask.request.args['error'],
+        flask.request.args['error_description'],
+      )
+  flask.session['oauth_token'] = (resp['oauth_token'], '')
+  me = bitbucket.get('user',
+      data={'site': 'stackoverflow', 'access_token': resp['oauth_token']}
+    )
+  user_db = retrieve_user_from_soverflow(me.data)
+  return signin_user_db(user_db)
+
+
+@soverflow.tokengetter
+def get_soverflow_oauth_token():
+  return flask.session.get('oauth_token')
+
+
+@app.route('/signin/soverflow/')
+def signin_soverflow():
+  flask.session['oauth_token'] = None
+  return soverflow.authorize(
+      callback=flask.url_for('soverflow_authorized',
+          next=util.get_next_url(),
+          _external=True,
+        )
+    )
+
+
+def retrieve_user_from_soverflow(response):
+  auth_id = 'soverflow_%s' % response['user_id']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  if user_db:
+    return user_db
+  return create_user_db(
+      auth_id,
+      response['display_name'],
+      unidecode.unidecode(response['display_name']),
+      email='%s@stackoverflow.com' % response['display_name']
     )
 
 
