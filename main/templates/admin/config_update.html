@@ -11,6 +11,7 @@
       <legend>Info</legend>
       <ul>
         <li>For most of the settings you will have to restart the <a href="https://developers.google.com/appengine/docs/adminconsole/instances" target="_blank">instances</a></li>
+        <li>OAuth redirect URI for <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox</a>: <em>{{ url_for('dropbox_authorized', _external=True).replace('http:', 'https:') }}</em></li>
         <li>Site URL for <a href="https://developers.facebook.com/apps" target="_blank">Facebook application</a>: <em>{{request.host_url[:-1]}}</em></li>
         <li>Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em></li>
         <li>Callback URL for <a href="https://dev.twitter.com/apps" target="_blank">Twitter application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('twitter_authorized'))}}</em></li>
