@@ -46,6 +46,8 @@ class Config(Base, modelx.ConfigX):
   twitter_consumer_secret = ndb.StringProperty(default='')
   vk_app_id = ndb.StringProperty(default='')
   vk_app_secret = ndb.StringProperty(default='')
+  windowslive_client_id = ndb.StringProperty(default='')
+  windowslive_client_secret = ndb.StringProperty(default='')
 
   _PROPERTIES = Base._PROPERTIES.union({
       'analytics_id',
@@ -66,6 +68,8 @@ class Config(Base, modelx.ConfigX):
       'linkedin_secret_key',
       'twitter_consumer_key',
       'twitter_consumer_secret',
+      'windowslive_client_id',
+      'windowslive_client_secret',
     })
 
 

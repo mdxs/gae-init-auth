@@ -32,6 +32,8 @@ class ConfigUpdateForm(wtf.Form):
   twitter_consumer_secret = wtf.TextField('Twitter Consumer Secret', filters=[util.strip_filter])
   vk_app_id = wtf.TextField('VK App ID', filters=[util.strip_filter])
   vk_app_secret = wtf.TextField('VK App Secret', filters=[util.strip_filter])
+  windowslive_client_id = wtf.TextField('Windows Live Client ID', filters=[util.strip_filter])
+  windowslive_client_secret = wtf.TextField('Windows Live Client secret', filters=[util.strip_filter])
 
 
 @app.route('/_s/admin/config/', endpoint='admin_config_update_service')
