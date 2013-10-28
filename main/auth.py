@@ -132,6 +132,7 @@ def signin():
   linkedin_signin_url = flask.url_for('signin_linkedin', next=next_url)
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
+  windowslive_signin_url = flask.url_for('signin_windowslive', next=next_url)
 
   return flask.render_template(
       'signin.html',
@@ -145,6 +146,7 @@ def signin():
       linkedin_signin_url=linkedin_signin_url,
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
+      windowslive_signin_url=windowslive_signin_url,
       next_url=next_url,
     )
 
@@ -633,6 +635,77 @@ def retrieve_user_from_vk(response):
       auth_id,
       response['user_name'],
       unidecode.unidecode(response['user_name']),
+    )
+
+
+###############################################################################
+# Windows Live
+###############################################################################
+windowslive_oauth = oauth.OAuth()
+
+windowslive = windowslive_oauth.remote_app(
+    'windowslive',
+    base_url='https://apis.live.net/v5.0/',
+    request_token_url=None,
+    access_token_url='https://login.live.com/oauth20_token.srf',
+    access_token_method='POST',
+    access_token_params={'grant_type': 'authorization_code'},
+    authorize_url='https://login.live.com/oauth20_authorize.srf',
+    consumer_key=model.Config.get_master_db().windowslive_client_id,
+    consumer_secret=model.Config.get_master_db().windowslive_client_secret,
+    request_token_params={'scope': 'wl.emails'}
+  )
+
+
+@app.route('/_s/callback/windowslive/oauth-authorized/')
+@windowslive.authorized_handler
+def windowslive_authorized(resp):
+  if resp is None:
+    return 'Access denied: error=%s error_description=%s' % (
+        flask.request.args['error'],
+        flask.request.args['error_description'],
+      )
+  flask.session['oauth_token'] = (resp['access_token'], '')
+  me = windowslive.get(
+      'me',
+      data={'access_token': resp['access_token']},
+      headers={'accept-encoding': 'identity'},
+    ).data
+  if me.get('error'):
+    return 'Unknown error: error:%s error_description:%s' % (
+        me['code'],
+        me['message'],
+      )
+  user_db = retrieve_user_from_windowslive(me)
+  return signin_user_db(user_db)
+
+
+@windowslive.tokengetter
+def get_windowslive_oauth_token():
+  return flask.session.get('oauth_token')
+
+
+@app.route('/signin/windowslive/')
+def signin_windowslive():
+  return windowslive.authorize(
+      callback=flask.url_for(
+          'windowslive_authorized',
+          next=util.get_next_url(),
+          _external=True,
+        )
+    )
+
+
+def retrieve_user_from_windowslive(response):
+  auth_id = 'windowslive_%s' % response['id']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  if user_db:
+    return user_db
+  return create_user_db(
+      auth_id,
+      response['name'],
+      unidecode.unidecode(response['name']),
+      email=response['emails']['preferred'] or response['emails']['account'],
     )
 
 
