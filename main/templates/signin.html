@@ -65,6 +65,13 @@
           Sign in with Dropbox
         </a>
       # endif
+
+      # if config.CONFIG_DB.windowslive_client_id and config.CONFIG_DB.windowslive_client_secret
+        <a class="btn btn-block btn-lg btn-windowslive" href="{{windowslive_signin_url}}" rel="nofollow">
+          <i class="fa fa-windows"></i>
+          Sign in with Windows Live
+        </a>
+      # endif
     </div>
   </div>
 # endblock
