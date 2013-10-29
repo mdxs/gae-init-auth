@@ -5,6 +5,7 @@ from google.appengine.api import users
 from google.appengine.api import urlfetch
 
 import functools
+import re
 
 import re
 import unidecode
@@ -714,8 +715,7 @@ def retrieve_user_from_windowslive(response):
 # Helpers
 ################################################################################
 def create_user_db(auth_id, name, username, email='', **params):
-  username = username.split('@')[0].lower()
-  username = username.replace(' ', '.').replace('_', '.').replace('-', '.')
+  username = re.sub(r'_+|-+|\s+', '.', username.split('@')[0].lower().strip())
   new_username = username
   n = 1
   while model.User.retrieve_one_by('username', new_username) is not None:
