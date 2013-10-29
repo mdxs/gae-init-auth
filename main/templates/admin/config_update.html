@@ -15,6 +15,7 @@
         <li>Site URL for <a href="https://developers.facebook.com/apps" target="_blank">Facebook application</a>: <em>{{request.host_url[:-1]}}</em></li>
         <li>Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em></li>
         <li>Callback URL for <a href="https://dev.twitter.com/apps" target="_blank">Twitter application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('twitter_authorized'))}}</em></li>
+        <li>Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>: <em>{{request.host_url[:-1]}}</em></li>
       </ul>
     </div>
     <div class="col-md-8 col-md-pull-4">
