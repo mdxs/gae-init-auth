@@ -704,7 +704,7 @@ def retrieve_user_from_windowslive(response):
   email = response['emails']['preferred'] or response['emails']['account']
   return create_user_db(
       auth_id,
-      response['name'],
+      response['name'] or '',
       email,
       email=email,
     )
