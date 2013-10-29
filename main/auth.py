@@ -653,7 +653,7 @@ windowslive = windowslive_oauth.remote_app(
     authorize_url='https://login.live.com/oauth20_authorize.srf',
     consumer_key=model.Config.get_master_db().windowslive_client_id,
     consumer_secret=model.Config.get_master_db().windowslive_client_secret,
-    request_token_params={'scope': 'wl.emails'}
+    request_token_params={'scope': 'wl.emails'},
   )
 
 
