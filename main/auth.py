@@ -701,11 +701,12 @@ def retrieve_user_from_windowslive(response):
   user_db = model.User.retrieve_one_by('auth_ids', auth_id)
   if user_db:
     return user_db
+  email = response['emails']['preferred'] or response['emails']['account']
   return create_user_db(
       auth_id,
       response['name'],
-      unidecode.unidecode(response['name']),
-      email=response['emails']['preferred'] or response['emails']['account'],
+      email,
+      email=email,
     )
 
 
