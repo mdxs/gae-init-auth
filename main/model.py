@@ -68,6 +68,8 @@ class Config(Base, modelx.ConfigX):
       'linkedin_secret_key',
       'twitter_consumer_key',
       'twitter_consumer_secret',
+      'vk_app_id',
+      'vk_app_secret',
       'windowslive_client_id',
       'windowslive_client_secret',
     })
