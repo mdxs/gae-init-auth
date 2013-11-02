@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from google.appengine.api import app_identity
 import flask
 from flaskext import wtf
 
@@ -22,7 +23,7 @@ class ConfigUpdateForm(wtf.Form):
   dropbox_app_secret = wtf.TextField('Dropbox App Secret', filters=[util.strip_filter])
   facebook_app_id = wtf.TextField('Facebook App ID', filters=[util.strip_filter])
   facebook_app_secret = wtf.TextField('Facebook App Secret', filters=[util.strip_filter])
-  feedback_email = wtf.TextField('Feedback Email', [wtf.validators.optional(), wtf.validators.email()], filters=[util.strip_filter])
+  feedback_email = wtf.TextField('Feedback Email', [wtf.validators.optional(), wtf.validators.email()], filters=[util.email_filter])
   flask_secret_key = wtf.TextField('Flask Secret Key', [wtf.validators.required()], filters=[util.strip_filter])
   github_client_id = wtf.TextField('GitHub Client ID', filters=[util.strip_filter])
   github_client_secret = wtf.TextField('GitHub Client Secret', filters=[util.strip_filter])
@@ -52,11 +53,20 @@ def admin_config_update():
   if flask.request.path.startswith('/_s/'):
     return util.jsonify_model_db(config_db)
 
+  instances_url = None
+  if config.PRODUCTION:
+    instances_url = '%s?app_id=%s&version_id=%s' % (
+        'https://appengine.google.com/instances',
+        app_identity.get_application_id(),
+        config.CURRENT_VERSION_ID,
+      )
+
   return flask.render_template(
       'admin/config_update.html',
       title='Admin Config',
       html_class='admin-config',
       form=form,
       config_db=config_db,
+      instances_url=instances_url,
       has_json=True,
     )

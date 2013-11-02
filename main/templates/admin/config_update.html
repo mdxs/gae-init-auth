@@ -10,7 +10,7 @@
     <div class="col-md-4 col-md-push-8">
       <legend>Info</legend>
       <ul>
-        <li>For most of the settings you will have to restart the <a href="https://developers.google.com/appengine/docs/adminconsole/instances" target="_blank">instances</a></li>
+        <li>For most of the settings you will {% if instances_url %} <a href="{{instances_url}}" target="_blank">have to restart</a> {% else %} have to restart {% endif %} the <a href="https://developers.google.com/appengine/docs/adminconsole/instances" target="_blank">instances</a></li>
         <li>OAuth redirect URI for <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox</a>: <em>{{'https://%s%s' % (request.host, url_for('dropbox_authorized'))}}</em></li>
         <li>Site URL for <a href="https://developers.facebook.com/apps" target="_blank">Facebook application</a>: <em>{{request.host_url[:-1]}}</em></li>
         <li>Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em></li>
@@ -24,7 +24,7 @@
           <legend>General</legend>
           {{form.csrf_token}}
 
-          {{forms.text_field(form.brand_name)}}
+          {{forms.text_field(form.brand_name, autofocus=True)}}
           {{forms.email_field(form.feedback_email)}}
           {{forms.text_field(form.analytics_id)}}
           {{forms.text_field(form.flask_secret_key)}}
