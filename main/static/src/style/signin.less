@@ -52,9 +52,9 @@
   }
 }
 
-.btn-social(@bgcolor, @color: white) {
-  background-color: @bgcolor;
-  .button-variant(@color, @bgcolor, rgba(0, 0, 0, 0.2));
+.btn-social(@color-bg, @color: white) {
+  background-color: @color-bg;
+  .button-variant(@color, @color-bg, rgba(0, 0, 0, 0.2));
 }
 
 
@@ -64,7 +64,7 @@
 .btn-github      { .btn-social(#444444); }
 .btn-google      { .btn-social(#DD4B39); }
 .btn-linkedin    { .btn-social(#007bb6); }
-.btn-reddit      { .btn-social(#CEE3F8, #000);}
+.btn-reddit      { .btn-social(#EFF7FF, #000);}
 .btn-twitter     { .btn-social(#2BA9E1); }
 .btn-vk          { .btn-social(#587EA3); }
 .btn-windowslive { .btn-social(#2672EC); }
