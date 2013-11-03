@@ -5,13 +5,14 @@ from google.appengine.api import users
 from google.appengine.api import urlfetch
 
 import functools
-import re
+from base64 import b64encode
 
 import re
 import unidecode
 import flask
 from flaskext import login
 from flaskext import oauth
+from werkzeug.urls import url_encode
 
 import util
 import model
@@ -131,6 +132,7 @@ def signin():
   github_signin_url = flask.url_for('signin_github', next=next_url)
   google_signin_url = flask.url_for('signin_google', next=next_url)
   linkedin_signin_url = flask.url_for('signin_linkedin', next=next_url)
+  reddit_signin_url = flask.url_for('signin_reddit', next=next_url)
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
   windowslive_signin_url = flask.url_for('signin_windowslive', next=next_url)
@@ -145,6 +147,7 @@ def signin():
       github_signin_url=github_signin_url,
       google_signin_url=google_signin_url,
       linkedin_signin_url=linkedin_signin_url,
+      reddit_signin_url=reddit_signin_url,
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
       windowslive_signin_url=windowslive_signin_url,
@@ -575,6 +578,98 @@ def retrieve_user_from_linkedin(response):
       full_name,
       response['emailAddress'] or unidecode.unidecode(full_name),
       response['emailAddress'],
+    )
+
+
+###############################################################################
+# Reddit
+###############################################################################
+reddit_oauth = oauth.OAuth()
+
+reddit = reddit_oauth.remote_app(
+    'reddit',
+    base_url='https://oauth.reddit.com/api/v1/',
+    request_token_url=None,
+    access_token_url='https://ssl.reddit.com/api/v1/access_token',
+    access_token_method = "POST",
+    access_token_params={'grant_type': 'authorization_code'},
+    authorize_url='https://ssl.reddit.com/api/v1/authorize',
+    consumer_key=model.Config.get_master_db().reddit_client_id,
+    consumer_secret=model.Config.get_master_db().reddit_client_secret,
+    request_token_params={'scope': 'identity', 'state': util.uuid()},
+  )
+
+
+def reddit_get_token():
+  access_args = {
+      'code': flask.request.args.get('code'),
+      'client_id': reddit.consumer_key,
+      'client_secret': reddit.consumer_secret,
+      'redirect_uri': flask.session.get(reddit.name + '_oauthredir'),
+    }
+  access_args.update(reddit.access_token_params)
+  auth = 'Basic ' + b64encode(
+      ('%s:%s' % (reddit.consumer_key, reddit.consumer_secret)).encode(
+          'latin1')).strip().decode('latin1')
+  resp, content = reddit._client.request(
+      reddit.expand_url(reddit.access_token_url),
+      reddit.access_token_method,
+      url_encode(access_args),
+      headers={'Authorization': auth},
+    )
+
+  data = oauth.parse_response(resp, content)
+  if not reddit.status_okay(resp):
+    raise oauth.OAuthException(
+        'Invalid response from ' + reddit.name,
+        type='invalid_response', data=data,
+      )
+  return data
+
+
+reddit.handle_oauth2_response = reddit_get_token
+
+
+@app.route('/_s/callback/reddit/oauth-authorized/')
+@reddit.authorized_handler
+def reddit_authorized(resp):
+  if flask.request.args.get('error'):
+    return 'Access denied: error=%s' % (flask.request.args['error'])
+
+  flask.session['oauth_token'] = (resp['access_token'], '')
+  me = reddit.request(
+      'me',
+      headers={'Authorization': 'Bearer %s' % resp['access_token']},
+    )
+  user_db = retrieve_user_from_reddit(me.data)
+  return signin_user_db(user_db)
+
+
+@reddit.tokengetter
+def get_reddit_oauth_token():
+  return flask.session.get('oauth_token')
+
+
+@app.route('/signin/reddit/')
+def signin_reddit():
+  return reddit.authorize(
+      callback=flask.url_for(
+          'reddit_authorized',
+          _external=True,
+        )
+    )
+
+
+def retrieve_user_from_reddit(response):
+  auth_id = 'reddit_%s' % response['id']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  if user_db:
+    return user_db
+
+  return create_user_db(
+      auth_id,
+      response['name'],
+      unidecode.unidecode(response['name']),
     )
 
 
