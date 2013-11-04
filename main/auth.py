@@ -12,7 +12,7 @@ import unidecode
 import flask
 from flaskext import login
 from flaskext import oauth
-from werkzeug.urls import url_encode
+from werkzeug import urls
 
 import util
 import model
@@ -614,7 +614,7 @@ def reddit_get_token():
   resp, content = reddit._client.request(
       reddit.expand_url(reddit.access_token_url),
       reddit.access_token_method,
-      url_encode(access_args),
+      urls.url_encode(access_args),
       headers={'Authorization': auth},
     )
 
