@@ -133,7 +133,7 @@ def signin():
   google_signin_url = flask.url_for('signin_google', next=next_url)
   linkedin_signin_url = flask.url_for('signin_linkedin', next=next_url)
   reddit_signin_url = flask.url_for('signin_reddit', next=next_url)
-  stackoverflow_signin_url = flask.url_for('signin_stackoverflow', next=next_url)  soverflow_signin_url = flask.url_for('signin_soverflow', next=next_url)
+  stackoverflow_signin_url = flask.url_for('signin_stackoverflow', next=next_url)
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
   windowslive_signin_url = flask.url_for('signin_windowslive', next=next_url)
@@ -149,7 +149,7 @@ def signin():
       google_signin_url=google_signin_url,
       linkedin_signin_url=linkedin_signin_url,
       reddit_signin_url=reddit_signin_url,
-      soverflow_signin_url=soverflow_signin_url,
+      stackoverflow_signin_url=stackoverflow_signin_url,
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
       windowslive_signin_url=windowslive_signin_url,
