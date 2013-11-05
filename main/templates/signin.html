@@ -66,13 +66,6 @@
         </a>
       # endif
 
-      # if config.CONFIG_DB.stackoverflow_client_id and config.CONFIG_DB.stackoverflow_client_secret
-        <a class="btn btn-block btn-lg btn-social btn-stackoverflow" href="{{stackoverflow_signin_url}}" rel="nofollow">
-          <i class="fa fa-stack-overflow"></i>
-          Sign in with Stack Overflow
-        </a>
-      # endif
-
       # if config.CONFIG_DB.windowslive_client_id and config.CONFIG_DB.windowslive_client_secret
         <a class="btn btn-block btn-lg btn-social btn-windowslive" href="{{windowslive_signin_url}}" rel="nofollow">
           <i class="fa fa-windows"></i>
@@ -84,6 +77,13 @@
         <a class="btn btn-block btn-lg btn-social btn-reddit" href="{{reddit_signin_url}}" rel="nofollow">
           <i class="fa icon-reddit"></i>
           Sign in with Reddit
+        </a>
+      # endif
+
+      # if config.CONFIG_DB.stackoverflow_client_id and config.CONFIG_DB.stackoverflow_client_secret
+        <a class="btn btn-block btn-lg btn-social btn-stackoverflow" href="{{stackoverflow_signin_url}}" rel="nofollow">
+          <i class="fa fa-stack-overflow"></i>
+          Sign in with Stack Overflow
         </a>
       # endif
     </div>
