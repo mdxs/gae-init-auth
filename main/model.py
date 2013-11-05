@@ -44,6 +44,9 @@ class Config(Base, modelx.ConfigX):
   linkedin_secret_key = ndb.StringProperty(default='')
   reddit_client_id = ndb.StringProperty(default='')
   reddit_client_secret = ndb.StringProperty(default='')
+  stackoverflow_client_id = ndb.StringProperty(default='')
+  stackoverflow_client_secret = ndb.StringProperty(default='')
+  stackoverflow_key = ndb.StringProperty(default='')
   twitter_consumer_key = ndb.StringProperty(default='')
   twitter_consumer_secret = ndb.StringProperty(default='')
   vk_app_id = ndb.StringProperty(default='')
@@ -70,6 +73,9 @@ class Config(Base, modelx.ConfigX):
       'linkedin_secret_key',
       'reddit_client_id',
       'reddit_client_secret',
+      'stackoverflow_client_id',
+      'stackoverflow_client_secret',
+      'stackoverflow_key',
       'twitter_consumer_key',
       'twitter_consumer_secret',
       'vk_app_id',
