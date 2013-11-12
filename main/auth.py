@@ -790,7 +790,6 @@ def signin_vk():
   return vk.authorize(
       callback=flask.url_for(
           'vk_authorized',
-          scope='notify',
           next=util.get_next_url(),
           _external=True,
         )
