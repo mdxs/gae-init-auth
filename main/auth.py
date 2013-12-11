@@ -10,8 +10,8 @@ from base64 import b64encode
 import re
 import unidecode
 import flask
-from flaskext import login
-from flaskext import oauth
+from flask.ext import login
+from flask.ext import oauth
 from werkzeug import urls
 
 import util
