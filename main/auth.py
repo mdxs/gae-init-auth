@@ -1,28 +1,27 @@
 # -*- coding: utf-8 -*-
 
-from google.appengine.ext import ndb
-from google.appengine.api import users
-from google.appengine.api import urlfetch
-
-import functools
 from base64 import b64encode
-
+import functools
 import re
 import unidecode
-import flask
+
 from flask.ext import login
 from flask.ext import oauth
+from google.appengine.api import urlfetch
+from google.appengine.api import users
+from google.appengine.ext import ndb
 from werkzeug import urls
+import flask
 
-import util
-import model
 import config
+import model
+import util
 
 from main import app
 
 
 ###############################################################################
-# Flaskext Login
+# Flask Login
 ###############################################################################
 login_manager = login.LoginManager()
 
@@ -250,7 +249,7 @@ def signin_twitter():
       )
   except:
     flask.flash(
-        'Something went terribly wrong with Twitter sign in. Please try again.',
+        'Something went wrong with Twitter sign in. Please try again.',
         category='danger',
       )
     return flask.redirect(flask.url_for('signin', next=util.get_next_url()))

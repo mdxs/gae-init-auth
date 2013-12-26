@@ -26,32 +26,37 @@
 # endmacro
 
 
+# macro auth_icon(auth_id)
+  # if auth_id.startswith('bitbucket')
+    <span class="fa fa-bitbucket"></span>
+  # elif auth_id.startswith('dropbox')
+    <span class="fa fa-dropbox"></span>
+  # elif auth_id.startswith('facebook')
+    <span class="fa fa-facebook"></span>
+  # elif auth_id.startswith('federated')
+    <span class="fa fa-google-plus"></span>
+  # elif auth_id.startswith('github')
+    <span class="fa fa-github"></span>
+  # elif auth_id.startswith('linkedin')
+    <span class="fa fa-linkedin"></span>
+  # elif auth_id.startswith('reddit')
+    <span class="fa icon-reddit"></span>
+  # elif auth_id.startswith('stackoverflow')
+    <span class="fa fa-stack-overflow"></span>
+  # elif auth_id.startswith('twitter')
+    <span class="fa fa-twitter"></span>
+  # elif auth_id.startswith('vk')
+    <span class="fa fa-vk"></span>
+  # elif auth_id.startswith('windowslive')
+    <span class="fa fa-windows"></span>
+  # else
+    <span class="fa fa-question"></span>
+  # endif
+# endmacro
+
+
 # macro auth_icons(auth_ids)
   # for auth_id in auth_ids
-    # if auth_id.startswith('bitbucket')
-      <span class="fa fa-bitbucket"></span>
-    # elif auth_id.startswith('dropbox')
-      <span class="fa fa-dropbox"></span>
-    # elif auth_id.startswith('facebook')
-      <span class="fa fa-facebook"></span>
-    # elif auth_id.startswith('federated')
-      <span class="fa fa-google-plus"></span>
-    # elif auth_id.startswith('github')
-      <span class="fa fa-github"></span>
-    # elif auth_id.startswith('linkedin')
-      <span class="fa fa-linkedin"></span>
-    # elif auth_id.startswith('reddit')
-      <span class="fa icon-reddit"></span>
-    # elif auth_id.startswith('stackoverflow')
-      <span class="fa fa-stack-overflow"></span>
-    # elif auth_id.startswith('twitter')
-      <span class="fa fa-twitter"></span>
-    # elif auth_id.startswith('vk')
-      <span class="fa fa-vk"></span>
-    # elif auth_id.startswith('windowslive')
-      <span class="fa fa-windows"></span>
-    # else
-      <span class="fa fa-question"></span>
-    # endif
+    {{auth_icon(auth_id)}}
   # endfor
 # endmacro
