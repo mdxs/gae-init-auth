@@ -14,6 +14,7 @@
         <li>OAuth redirect URI for <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox</a>: <em>{{'https://%s%s' % (request.host, url_for('dropbox_authorized'))}}</em></li>
         <li>Site URL for <a href="https://developers.facebook.com/apps" target="_blank">Facebook application</a>: <em>{{request.host_url[:-1]}}</em></li>
         <li>Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em></li>
+        <li>Redirect URI for <a href="http://instagram.com/developer/clients/manage/" target="_blank">Instagram application</a>: <em>{{url_for('instagram_authorized', _external=True)}}</em></li>
         <li>Redirect URL for <a href="https://ssl.reddit.com/prefs/apps/" target="_blank">Reddit application</a>: <em>{{url_for('reddit_authorized', _external=True)}}</em></li>
         <li>Callback URL for <a href="https://dev.twitter.com/apps" target="_blank">Twitter application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('twitter_authorized'))}}</em></li>
         <li>Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>: <em>{{request.host_url[:-1]}}</em></li>
@@ -42,6 +43,8 @@
           {{forms.text_field(form.facebook_app_secret)}}
           {{forms.text_field(form.github_client_id)}}
           {{forms.text_field(form.github_client_secret)}}
+          {{forms.text_field(form.instagram_client_id)}}
+          {{forms.text_field(form.instagram_client_secret)}}
           {{forms.text_field(form.linkedin_api_key)}}
           {{forms.text_field(form.linkedin_secret_key)}}
           {{forms.text_field(form.reddit_client_id)}}

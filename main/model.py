@@ -42,6 +42,8 @@ class Config(Base, modelx.ConfigX):
   flask_secret_key = ndb.StringProperty(default=util.uuid())
   github_client_id = ndb.StringProperty(default='')
   github_client_secret = ndb.StringProperty(default='')
+  instagram_client_id = ndb.StringProperty(default='')
+  instagram_client_secret = ndb.StringProperty(default='')
   linkedin_api_key = ndb.StringProperty(default='')
   linkedin_secret_key = ndb.StringProperty(default='')
   reddit_client_id = ndb.StringProperty(default='')

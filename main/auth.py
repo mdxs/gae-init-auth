@@ -130,6 +130,7 @@ def signin():
   facebook_signin_url = flask.url_for('signin_facebook', next=next_url)
   github_signin_url = flask.url_for('signin_github', next=next_url)
   google_signin_url = flask.url_for('signin_google', next=next_url)
+  instgram_signin_url = flask.url_for('signin_instagram', next=next_url)
   linkedin_signin_url = flask.url_for('signin_linkedin', next=next_url)
   reddit_signin_url = flask.url_for('signin_reddit', next=next_url)
   stackoverflow_signin_url = flask.url_for('signin_stackoverflow', next=next_url)
@@ -146,6 +147,7 @@ def signin():
       facebook_signin_url=facebook_signin_url,
       github_signin_url=github_signin_url,
       google_signin_url=google_signin_url,
+      instagram_signin_url=instgram_signin_url,
       linkedin_signin_url=linkedin_signin_url,
       reddit_signin_url=reddit_signin_url,
       stackoverflow_signin_url=stackoverflow_signin_url,
@@ -499,6 +501,67 @@ def retrieve_user_from_github(response):
       response['email'] or '',
     )
 
+
+###############################################################################
+# Instagram
+###############################################################################
+instagram_oauth = oauth.OAuth()
+
+instagram = instagram_oauth.remote_app(
+    'instagram',
+    base_url='https://api.instagram.com/v1',
+    request_token_url=None,
+    access_token_url='https://api.instagram.com/oauth/access_token',
+    access_token_params={'grant_type': 'authorization_code'},
+    access_token_method='POST',
+    authorize_url='https://instagram.com/oauth/authorize/',
+    consumer_key=model.Config.get_master_db().instagram_client_id,
+    consumer_secret=model.Config.get_master_db().instagram_client_secret,
+  )
+
+
+@app.route('/_s/callback/instagram/oauth-authorized/')
+@instagram.authorized_handler
+def instagram_authorized(resp):
+  if resp is None:
+    return 'Access denied: error=%s error_description=%s' % (
+        flask.request.args['error'],
+        flask.request.args['error_description'],
+      )
+  access_token = resp['access_token']
+  flask.session['oauth_token'] = (access_token, '')
+  me = resp['user']
+  user_db = retrieve_user_from_instagram(me)
+  return signin_user_db(user_db)
+
+
+@instagram.tokengetter
+def get_instagram_oauth_token():
+  return flask.session.get('oauth_token')
+
+
+@app.route('/signin/instagram/')
+def signin_instagram():
+  return instagram.authorize(
+      callback=flask.url_for(
+          'instagram_authorized',
+          next=util.get_next_url(),
+          _external=True,
+        )
+    )
+
+
+def retrieve_user_from_instagram(response):
+  auth_id = 'instagram_%s' % response['id']
+  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  if user_db:
+    return user_db
+
+  return create_user_db(
+      auth_id,
+      response['full_name'] or response['username'],
+      unidecode.unidecode(response['username']),
+    )
 
 ###############################################################################
 # LinkedIn

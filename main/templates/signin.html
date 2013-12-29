@@ -86,6 +86,13 @@
           Sign in with Reddit
         </a>
       # endif
+
+      # if config.CONFIG_DB.instagram_client_id and config.CONFIG_DB.instagram_client_secret
+        <a class="btn btn-block btn-lg btn-social btn-instagram" href="{{instagram_signin_url}}" rel="nofollow">
+          <i class="fa fa-instagram"></i>
+          Sign in with Instagram
+        </a>
+      # endif
     </div>
   </div>
 # endblock
