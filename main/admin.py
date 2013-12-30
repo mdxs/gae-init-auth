@@ -27,6 +27,8 @@ class ConfigUpdateForm(wtf.Form):
   flask_secret_key = wtf.StringField('Flask Secret Key', [wtf.validators.required()], filters=[util.strip_filter])
   github_client_id = wtf.StringField('GitHub Client ID', filters=[util.strip_filter])
   github_client_secret = wtf.StringField('GitHub Client Secret', filters=[util.strip_filter])
+  instagram_client_id = wtf.StringField('Instagram Client ID', filters=[util.strip_filter])
+  instagram_client_secret = wtf.StringField('Instagram Client Secret', filters=[util.strip_filter])
   linkedin_api_key = wtf.StringField('LinkedIn API Key', filters=[util.strip_filter])
   linkedin_secret_key = wtf.StringField('LinkedIn Secret Key', filters=[util.strip_filter])
   reddit_client_id = wtf.StringField('Reddit Key', filters=[util.strip_filter])
