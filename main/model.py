@@ -73,6 +73,8 @@ class Config(Base, modelx.ConfigX):
       'flask_secret_key',
       'github_client_id',
       'github_client_secret',
+      'instagram_client_id',
+      'instagram_client_secret',
       'linkedin_api_key',
       'linkedin_secret_key',
       'reddit_client_id',
