@@ -137,7 +137,7 @@ def signin():
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
   windowslive_signin_url = flask.url_for('signin_windowslive', next=next_url)
-  yahoo_signin_url = flask.url_for('signin_yahoo', next_url=next_url)
+  yahoo_signin_url = flask.url_for('signin_yahoo', next=next_url)
 
   return flask.render_template(
       'signin.html',
@@ -953,7 +953,7 @@ yahoo_oauth = oauth.OAuth()
 
 yahoo = yahoo_oauth.remote_app(
     'yahoo',
-    base_url='http://social.yahooapis.com/v1/',
+    base_url='http://social.yahooapis.com/',
     request_token_url='https://api.login.yahoo.com/oauth/v2/get_request_token',
     access_token_url='https://api.login.yahoo.com/oauth/v2/get_token',
     authorize_url='https://api.login.yahoo.com/oauth/v2/request_auth',
@@ -974,13 +974,21 @@ def yahoo_authorized(resp):
       resp['oauth_token_secret'],
     )
 
-  # http://developer.yahoo.com/social/rest_api_guide/introspective-guid-resource.html
-  yahoo_guid = yahoo.get('/me/guid', data={'format': 'json'}).data['guid']['value']
+  try:
+    yahoo_guid = yahoo.get(
+        '/v1/me/guid', data={'format': 'json', 'realm': 'yahooapis.com'}
+      ).data['guid']['value']
 
-  # http://developer.yahoo.com/social/rest_api_guide/extended-profile-resource.html
-  profile = yahoo.get(
-    '/user/%s/profile' % yahoo_guid, data={'format': 'json'}).data['profile']
-  profile['id'] = yahoo_guid
+    profile = yahoo.get(
+        '/v1/user/%s/profile' % yahoo_guid,
+        data={'format': 'json', 'realm': 'yahooapis.com'}
+      ).data['profile']
+  except:
+    flask.flash(
+        'Something went wrong with Yahoo sign in. Please try again.',
+        category='danger',
+      )
+    return flask.redirect(util.get_next_url())
   user_db = retrieve_user_from_yahoo(profile)
   return signin_user_db(user_db)
 
@@ -993,7 +1001,6 @@ def get_yahoo_oauth_token():
 @app.route('/signin/yahoo/')
 def signin_yahoo():
   flask.session.pop('oauth_token', None)
-
   try:
     return yahoo.authorize(
         callback=flask.url_for('yahoo_authorized', next=util.get_next_url()),
@@ -1007,11 +1014,14 @@ def signin_yahoo():
 
 
 def retrieve_user_from_yahoo(response):
-  auth_id = 'yahoo_%s' % response['id']
+  auth_id = 'yahoo_%s' % response['guid']
   user_db = model.User.retrieve_one_by('auth_ids', auth_id)
   if user_db:
     return user_db
-  full_name = ' '.join([response['givenName'], response['familyName']]).strip()
+  if response.get('givenName') or response.get('familyName'):
+    full_name = ' '.join([response['givenName'], response['familyName']]).strip()
+  else:
+    full_name = response['nickname']
   emails = [
       email for email in response.get('emails', []) if email.get('handle')]
   emails.sort(key=lambda e: e.get('primary', False))
