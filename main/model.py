@@ -57,6 +57,8 @@ class Config(Base, modelx.ConfigX):
   vk_app_secret = ndb.StringProperty(default='')
   windowslive_client_id = ndb.StringProperty(default='')
   windowslive_client_secret = ndb.StringProperty(default='')
+  yahoo_consumer_key = ndb.StringProperty(default='')
+  yahoo_consumer_secret = ndb.StringProperty(default='')
 
   _PROPERTIES = Base._PROPERTIES.union({
       'analytics_id',
@@ -88,6 +90,8 @@ class Config(Base, modelx.ConfigX):
       'vk_app_secret',
       'windowslive_client_id',
       'windowslive_client_secret',
+      'yahoo_consumer_key',
+      'yahoo_consumer_secret',
     })
 
 
