@@ -947,7 +947,7 @@ def retrieve_user_from_windowslive(response):
 
 
 ###############################################################################
-# Yahoo
+# Yahoo!
 ###############################################################################
 yahoo_oauth = oauth.OAuth()
 
@@ -985,7 +985,7 @@ def yahoo_authorized(resp):
       ).data['profile']
   except:
     flask.flash(
-        'Something went wrong with Yahoo sign in. Please try again.',
+        'Something went wrong with Yahoo! sign in. Please try again.',
         category='danger',
       )
     return flask.redirect(util.get_next_url())
@@ -1007,7 +1007,7 @@ def signin_yahoo():
       )
   except:
     flask.flash(
-        'Something went wrong with Yahoo sign in. Please try again.',
+        'Something went wrong with Yahoo! sign in. Please try again.',
         category='danger',
       )
     return flask.redirect(flask.url_for('signin', next=util.get_next_url()))

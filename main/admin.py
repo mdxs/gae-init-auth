@@ -42,8 +42,8 @@ class ConfigUpdateForm(wtf.Form):
   vk_app_secret = wtf.StringField('VK App Secret', filters=[util.strip_filter])
   windowslive_client_id = wtf.StringField('Windows Live Client ID', filters=[util.strip_filter])
   windowslive_client_secret = wtf.StringField('Windows Live Client secret', filters=[util.strip_filter])
-  yahoo_consumer_key = wtf.StringField('Yahoo Consumer Key', filters=[util.strip_filter])
-  yahoo_consumer_secret = wtf.StringField('Yahoo Consumer Secret', filters=[util.strip_filter])
+  yahoo_consumer_key = wtf.StringField('Yahoo! Consumer Key', filters=[util.strip_filter])
+  yahoo_consumer_secret = wtf.StringField('Yahoo! Consumer Secret', filters=[util.strip_filter])
 
 
 @app.route('/_s/admin/config/', endpoint='admin_config_update_service')
