@@ -155,7 +155,7 @@ def signin():
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
       windowslive_signin_url=windowslive_signin_url,
-      yahoo_signin_url = yahoo_signin_url,
+      yahoo_signin_url=yahoo_signin_url,
       next_url=next_url,
     )
 
@@ -396,7 +396,7 @@ dropbox = dropbox_oauth.remote_app(
     request_token_url=None,
     access_token_url='https://api.dropbox.com/1/oauth2/token',
     access_token_method='POST',
-    access_token_params = {'grant_type': 'authorization_code'},
+    access_token_params={'grant_type': 'authorization_code'},
     authorize_url='https://www.dropbox.com/1/oauth2/authorize',
     consumer_key=model.Config.get_master_db().dropbox_app_key,
     consumer_secret=model.Config.get_master_db().dropbox_app_secret,
@@ -658,7 +658,7 @@ reddit = reddit_oauth.remote_app(
     base_url='https://oauth.reddit.com/api/v1/',
     request_token_url=None,
     access_token_url='https://ssl.reddit.com/api/v1/access_token',
-    access_token_method = "POST",
+    access_token_method='POST',
     access_token_params={'grant_type': 'authorization_code'},
     authorize_url='https://ssl.reddit.com/api/v1/authorize',
     consumer_key=model.Config.get_master_db().reddit_client_id,
