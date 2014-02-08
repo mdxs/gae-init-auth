@@ -1,17 +1,13 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title">
-      <a data-toggle="collapse" data-parent="#oauth" href="#instagram">Instagram</a>
-      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_instagram}}"></i>
-    </h4>
-  </div>
-  <div id="instagram" class="panel-collapse collapse">
-    <div class="panel-body">
-      {{forms.text_field(form.instagram_client_id)}}
-      {{forms.text_field(form.instagram_client_secret)}}
-      <p class="help-block">
-        Redirect URI for <a href="http://instagram.com/developer/clients/manage/" target="_blank">Instagram application</a>: <em>{{url_for('instagram_authorized', _external=True)}}</em>
-      </p>
-    </div>
-  </div>
-</div>
+# macro instagram_help()
+  Redirect URI for <a href="http://instagram.com/developer/clients/manage/" target="_blank">Instagram application</a>:
+  <em>{{url_for('instagram_authorized', _external=True)}}</em>
+# endmacro
+
+{{
+  forms.oauth_fields(
+    'Instagram',
+    (form.instagram_client_id, form.instagram_client_secret),
+    config.CONFIG_DB.has_instagram,
+    instagram_help()
+  )
+}}

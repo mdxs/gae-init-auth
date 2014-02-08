@@ -1,17 +1,12 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title">
-      <a data-toggle="collapse" data-parent="#oauth" href="#yahoo">Yahoo!</a>
-      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_yahoo}}"></i>
-    </h4>
-  </div>
-  <div id="yahoo" class="panel-collapse collapse">
-    <div class="panel-body">
-      {{forms.text_field(form.yahoo_consumer_key)}}
-      {{forms.text_field(form.yahoo_consumer_secret)}}
-      <p class="help-block">
-        <a href="https://developer.apps.yahoo.com/projects" target="_blank">Yahoo! Projects</a>
-      </p>
-    </div>
-  </div>
-</div>
+# macro yahoo_help()
+  <a href="https://developer.apps.yahoo.com/projects" target="_blank">Yahoo! Projects</a>
+# endmacro
+
+{{
+  forms.oauth_fields(
+    'Yahoo!',
+    (form.yahoo_consumer_key, form.yahoo_consumer_secret),
+    config.CONFIG_DB.has_yahoo,
+    yahoo_help()
+  )
+}}

@@ -1,17 +1,13 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title">
-      <a data-toggle="collapse" data-parent="#oauth" href="#windowslive">Windows Live</a>
-      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_windowslive}}"></i>
-    </h4>
-  </div>
-  <div id="windowslive" class="panel-collapse collapse">
-    <div class="panel-body">
-      {{forms.text_field(form.windowslive_client_id)}}
-      {{forms.text_field(form.windowslive_client_secret)}}
-      <p class="help-block">
-        Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>: <em>{{request.host_url[:-1]}}</em>
-      </p>
-    </div>
-  </div>
-</div>
+# macro windows_live_help()
+  Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>:
+  <em>{{request.host_url[:-1]}}</em>
+# endmacro
+
+{{
+  forms.oauth_fields(
+    'Windows Live',
+    (form.windowslive_client_id, form.windowslive_client_secret),
+    config.CONFIG_DB.has_windowslive,
+    windows_live_help()
+  )
+}}
