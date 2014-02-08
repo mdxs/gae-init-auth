@@ -1,0 +1,13 @@
+<!-- Yahoo! -->
+<div class="panel {{'panel-success' if config.CONFIG_DB.has_yahoo else 'panel-default'}}">
+  <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#yahoo">Yahoo!</a></h4></div>
+  <div id="yahoo" class="panel-collapse collapse">
+    <div class="panel-body">
+      {{forms.text_field(form.yahoo_consumer_key)}}
+      {{forms.text_field(form.yahoo_consumer_secret)}}
+      <p class="help-block">
+        <a href="https://developer.apps.yahoo.com/projects" target="_blank">Yahoo! Projects</a>
+      </p>
+    </div>
+  </div>
+</div>
