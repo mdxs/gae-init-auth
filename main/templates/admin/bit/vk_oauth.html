@@ -1,6 +1,10 @@
-<!-- VK -->
-<div class="panel {{'panel-success' if config.CONFIG_DB.has_vk else 'panel-default'}}">
-  <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#vk">VK</a></h4></div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="panel-title">
+      <a data-toggle="collapse" data-parent="#oauth" href="#vk">VK</a>
+      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_vk}}"></i>
+    </h4>
+  </div>
   <div id="vk" class="panel-collapse collapse">
     <div class="panel-body">
       {{forms.text_field(form.vk_app_id)}}

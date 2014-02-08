@@ -1,6 +1,10 @@
-<!-- Dropbox -->
-<div class="panel {{'panel-success' if config.CONFIG_DB.has_dropbox else 'panel-default'}}">
-  <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#dropbox">Dropbox</a></h4></div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="panel-title">
+      <a data-toggle="collapse" data-parent="#oauth" href="#dropbox">Dropbox</a>
+      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_dropbox}}"></i>
+    </h4>
+  </div>
   <div id="dropbox" class="panel-collapse collapse">
     <div class="panel-body">
       {{forms.text_field(form.dropbox_app_key)}}
