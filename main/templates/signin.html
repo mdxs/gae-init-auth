@@ -17,84 +17,84 @@
         Sign in with Google
       </a>
 
-      # if config.CONFIG_DB.facebook_app_id and config.CONFIG_DB.facebook_app_secret
+      # if config.CONFIG_DB.has_facebook
         <a class="btn btn-block btn-lg btn-social btn-facebook" href="{{facebook_signin_url}}" rel="nofollow">
           <i class="fa fa-facebook"></i>
           Sign in with Facebook
         </a>
       # endif
 
-      # if config.CONFIG_DB.twitter_consumer_key and config.CONFIG_DB.twitter_consumer_secret
+      # if config.CONFIG_DB.has_twitter
         <a class="btn btn-block btn-lg btn-social btn-twitter" href="{{twitter_signin_url}}" rel="nofollow">
           <i class="fa fa-twitter"></i>
           Sign in with Twitter
         </a>
       # endif
 
-      # if config.CONFIG_DB.github_client_id and config.CONFIG_DB.github_client_secret
+      # if config.CONFIG_DB.has_github
         <a class="btn btn-block btn-lg btn-social btn-github" href="{{github_signin_url}}" rel="nofollow">
           <i class="fa fa-github"></i>
           Sign in with GitHub
         </a>
       # endif
 
-      # if config.CONFIG_DB.bitbucket_key and config.CONFIG_DB.bitbucket_secret
+      # if config.CONFIG_DB.has_bitbucket
         <a class="btn btn-block btn-lg btn-social btn-bitbucket" href="{{bitbucket_signin_url}}" rel="nofollow">
           <i class="fa fa-bitbucket"></i>
           Sign in with Bitbucket
         </a>
       # endif
 
-      # if config.CONFIG_DB.vk_app_id and config.CONFIG_DB.vk_app_secret
+      # if config.CONFIG_DB.has_vk
         <a class="btn btn-block btn-lg btn-social btn-vk" href="{{vk_signin_url}}" rel="nofollow">
           <i class="fa fa-vk"></i>
           Sign in with VK
         </a>
       # endif
 
-      # if config.CONFIG_DB.linkedin_api_key and config.CONFIG_DB.linkedin_secret_key
+      # if config.CONFIG_DB.has_linkedin
         <a class="btn btn-block btn-lg btn-social btn-linkedin" href="{{linkedin_signin_url}}" rel="nofollow">
           <i class="fa fa-linkedin"></i>
           Sign in with LinkedIn
         </a>
       # endif
 
-      # if config.CONFIG_DB.dropbox_app_key and config.CONFIG_DB.dropbox_app_secret
+      # if config.CONFIG_DB.has_dropbox
         <a class="btn btn-block btn-lg btn-social btn-dropbox" href="{{dropbox_signin_url}}" rel="nofollow">
           <i class="fa fa-dropbox"></i>
           Sign in with Dropbox
         </a>
       # endif
 
-      # if config.CONFIG_DB.windowslive_client_id and config.CONFIG_DB.windowslive_client_secret
+      # if config.CONFIG_DB.has_windowslive
         <a class="btn btn-block btn-lg btn-social btn-windowslive" href="{{windowslive_signin_url}}" rel="nofollow">
           <i class="fa fa-windows"></i>
           Sign in with Windows Live
         </a>
       # endif
 
-      # if config.CONFIG_DB.stackoverflow_client_id and config.CONFIG_DB.stackoverflow_client_secret
+      # if config.CONFIG_DB.has_stackoverflow
         <a class="btn btn-block btn-lg btn-social btn-stackoverflow" href="{{stackoverflow_signin_url}}" rel="nofollow">
           <i class="fa fa-stack-overflow"></i>
           Sign in with Stack Overflow
         </a>
       # endif
 
-      # if config.CONFIG_DB.reddit_client_id and config.CONFIG_DB.reddit_client_secret
+      # if config.CONFIG_DB.has_reddit
         <a class="btn btn-block btn-lg btn-social btn-reddit" href="{{reddit_signin_url}}" rel="nofollow">
           <i class="fa icon-reddit"></i>
           Sign in with Reddit
         </a>
       # endif
 
-      # if config.CONFIG_DB.instagram_client_id and config.CONFIG_DB.instagram_client_secret
+      # if config.CONFIG_DB.has_instagram
         <a class="btn btn-block btn-lg btn-social btn-instagram" href="{{instagram_signin_url}}" rel="nofollow">
           <i class="fa fa-instagram"></i>
           Sign in with Instagram
         </a>
       # endif
 
-      # if config.CONFIG_DB.yahoo_consumer_key and config.CONFIG_DB.yahoo_consumer_secret
+      # if config.CONFIG_DB.has_yahoo
         <a class="btn btn-block btn-lg btn-social btn-yahoo" href="{{yahoo_signin_url}}" rel="nofollow">
           <i class="fa icon-yahoo"></i>
           Sign in with Yahoo!

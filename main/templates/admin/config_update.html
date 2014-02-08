@@ -4,69 +4,199 @@
 # block content
   <div class="page-header">
     <h1>{{title}}</h1>
+    <p class="text-muted">
+      For most of the settings you will
+      # if instances_url
+        <a href="{{instances_url}}" target="_blank">have to restart</a>
+      # else
+        have to restart
+      # endif
+      the <a href="https://developers.google.com/appengine/docs/adminconsole/instances" target="_blank" >instances</a>
+    </p>
   </div>
 
-  <div class="row">
-    <div class="col-md-4 col-md-push-8">
-      <legend>Information</legend>
-      <ul>
-        <li>For most of the settings you will {% if instances_url %} <a href="{{instances_url}}" target="_blank">have to restart</a> {% else %} have to restart {% endif %} the <a href="https://developers.google.com/appengine/docs/adminconsole/instances" target="_blank">instances</a></li>
-        <li>OAuth redirect URI for <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox</a>: <em>{{'https://%s%s' % (request.host, url_for('dropbox_authorized'))}}</em></li>
-        <li>Site URL for <a href="https://developers.facebook.com/apps" target="_blank">Facebook application</a>: <em>{{request.host_url[:-1]}}</em></li>
-        <li>Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em></li>
-        <li>Redirect URI for <a href="http://instagram.com/developer/clients/manage/" target="_blank">Instagram application</a>: <em>{{url_for('instagram_authorized', _external=True)}}</em></li>
-        <li>Redirect URL for <a href="https://ssl.reddit.com/prefs/apps/" target="_blank">Reddit application</a>: <em>{{url_for('reddit_authorized', _external=True)}}</em></li>
-        <li>Callback URL for <a href="https://dev.twitter.com/apps" target="_blank">Twitter application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('twitter_authorized'))}}</em></li>
-        <li>Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>: <em>{{request.host_url[:-1]}}</em></li>
-      </ul>
-    </div>
-    <div class="col-md-8 col-md-pull-4">
-      <form class="row" method="POST" action="." novalidate>
-        <fieldset class="col-sm-6">
-          <legend>General</legend>
-          {{form.csrf_token}}
 
-          {{forms.text_field(form.brand_name, autofocus=True)}}
-          {{forms.email_field(form.feedback_email)}}
-          {{forms.text_field(form.analytics_id)}}
-          {{forms.text_field(form.flask_secret_key)}}
-          {{forms.textarea_field(form.announcement_html)}}
-          {{forms.select_field(form.announcement_type)}}
-        </fieldset>
-        <fieldset class="col-sm-6">
-          <legend>Third Party OAuth</legend>
-          {{forms.text_field(form.bitbucket_key)}}
-          {{forms.text_field(form.bitbucket_secret)}}
-          {{forms.text_field(form.dropbox_app_key)}}
-          {{forms.text_field(form.dropbox_app_secret)}}
-          {{forms.text_field(form.facebook_app_id)}}
-          {{forms.text_field(form.facebook_app_secret)}}
-          {{forms.text_field(form.github_client_id)}}
-          {{forms.text_field(form.github_client_secret)}}
-          {{forms.text_field(form.instagram_client_id)}}
-          {{forms.text_field(form.instagram_client_secret)}}
-          {{forms.text_field(form.linkedin_api_key)}}
-          {{forms.text_field(form.linkedin_secret_key)}}
-          {{forms.text_field(form.reddit_client_id)}}
-          {{forms.text_field(form.reddit_client_secret)}}
-          {{forms.text_field(form.stackoverflow_client_id)}}
-          {{forms.text_field(form.stackoverflow_client_secret)}}
-          {{forms.text_field(form.stackoverflow_key)}}
-          {{forms.text_field(form.twitter_consumer_key)}}
-          {{forms.text_field(form.twitter_consumer_secret)}}
-          {{forms.text_field(form.vk_app_id)}}
-          {{forms.text_field(form.vk_app_secret)}}
-          {{forms.text_field(form.windowslive_client_id)}}
-          {{forms.text_field(form.windowslive_client_secret)}}
-          {{forms.text_field(form.yahoo_consumer_key)}}
-          {{forms.text_field(form.yahoo_consumer_secret)}}
-        </fieldset>
-        <fieldset class="col-sm-12">
-          <button type="submit" class="btn btn-primary btn-block btn-loading" data-loading-text="Updating Config..">
-            Update Config
-          </button>
-        </fieldset>
-      </form>
+  <form method="POST" action="." novalidate>
+    <div class="row">
+      <fieldset class="col-sm-6 col-md-5">
+        <legend>General</legend>
+        {{form.csrf_token}}
+
+        {{forms.text_field(form.brand_name, autofocus=True)}}
+        {{forms.email_field(form.feedback_email)}}
+        {{forms.text_field(form.analytics_id)}}
+        {{forms.text_field(form.flask_secret_key)}}
+        {{forms.textarea_field(form.announcement_html)}}
+        {{forms.select_field(form.announcement_type)}}
+      </fieldset>
+
+      <fieldset class="col-sm-6 col-md-7">
+        <legend>Third Party OAuth</legend>
+        <div class="panel-group" id="oauth">
+
+          <!-- Bitbucket -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_bitbucket else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#bitbucket">Bitbucket</a></h4></div>
+            <div id="bitbucket" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.bitbucket_key)}}
+                {{forms.text_field(form.bitbucket_secret)}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Dropbox -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_dropbox else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#dropbox">Dropbox</a></h4></div>
+            <div id="dropbox" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.dropbox_app_key)}}
+                {{forms.text_field(form.dropbox_app_secret)}}
+                <p class="help-block">
+                  OAuth redirect URI for <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox</a>: <em>{{'https://%s%s' % (request.host, url_for('dropbox_authorized'))}}</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Facebook -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_facebook else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#facebook">Facebook</a></h4></div>
+            <div id="facebook" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.facebook_app_id)}}
+                {{forms.text_field(form.facebook_app_secret)}}
+                <p class="help-block">
+                  Site URL for <a href="https://developers.facebook.com/apps" target="_blank">Facebook application</a>: <em>{{request.host_url[:-1]}}</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- GitHub -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_github else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#github">GitHub</a></h4></div>
+            <div id="github" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.github_client_id)}}
+                {{forms.text_field(form.github_client_secret)}}
+                <p class="help-block">
+                  Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Instagram -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_instagram else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#instagram">Instagram</a></h4></div>
+            <div id="instagram" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.instagram_client_id)}}
+                {{forms.text_field(form.instagram_client_secret)}}
+                <p class="help-block">
+                  Redirect URI for <a href="http://instagram.com/developer/clients/manage/" target="_blank">Instagram application</a>: <em>{{url_for('instagram_authorized', _external=True)}}</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- LinkedIn -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_linkedin else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#linkedin">LinkedIn</a></h4></div>
+            <div id="linkedin" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.linkedin_api_key)}}
+                {{forms.text_field(form.linkedin_secret_key)}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Reddit -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_reddit else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#reddit">Reddit</a></h4></div>
+            <div id="reddit" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.reddit_client_id)}}
+                {{forms.text_field(form.reddit_client_secret)}}
+                <p class="help-block">
+                  Redirect URL for <a href="https://ssl.reddit.com/prefs/apps/" target="_blank">Reddit application</a>: <em>{{url_for('reddit_authorized', _external=True)}}</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- StackOverflow -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_stackoverflow else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#stackoverflow">StackOverflow</a></h4></div>
+            <div id="stackoverflow" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.stackoverflow_client_id)}}
+                {{forms.text_field(form.stackoverflow_client_secret)}}
+                {{forms.text_field(form.stackoverflow_key)}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Twitter -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_twitter else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#twitter">Twitter</a></h4></div>
+            <div id="twitter" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.twitter_consumer_key)}}
+                {{forms.text_field(form.twitter_consumer_secret)}}
+                <p class="help-block">
+                  Callback URL for <a href="https://dev.twitter.com/apps" target="_blank">Twitter application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('twitter_authorized'))}}</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- VK -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_vk else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#vk">VK</a></h4></div>
+            <div id="vk" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.vk_app_id)}}
+                {{forms.text_field(form.vk_app_secret)}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Windows Live -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_windowslive else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#windowslive">Windows Live</a></h4></div>
+            <div id="windowslive" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.windowslive_client_id)}}
+                {{forms.text_field(form.windowslive_client_secret)}}
+                <p class="help-block">
+                  Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>: <em>{{request.host_url[:-1]}}</em>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Yahoo! -->
+          <div class="panel {{'panel-success' if config.CONFIG_DB.has_yahoo else 'panel-default'}}">
+            <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#yahoo">Yahoo!</a></h4></div>
+            <div id="yahoo" class="panel-collapse collapse">
+              <div class="panel-body">
+                {{forms.text_field(form.yahoo_consumer_key)}}
+                {{forms.text_field(form.yahoo_consumer_secret)}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
     </div>
-  </div>
+    <hr>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <button type="submit" class="btn btn-primary btn-lg btn-block btn-loading" data-loading-text="Updating Config..">
+          Update Config
+        </button>
+      </div>
+    </div>
+  </form>
 # endblock
