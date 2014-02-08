@@ -1,0 +1,13 @@
+<!-- LinkedIn -->
+<div class="panel {{'panel-success' if config.CONFIG_DB.has_linkedin else 'panel-default'}}">
+  <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#linkedin">LinkedIn</a></h4></div>
+  <div id="linkedin" class="panel-collapse collapse">
+    <div class="panel-body">
+      {{forms.text_field(form.linkedin_api_key)}}
+      {{forms.text_field(form.linkedin_secret_key)}}
+      <p class="help-block">
+        <a href="https://www.linkedin.com/secure/developer" target="_blank">LinkedIn Applications</a>
+      </p>
+    </div>
+  </div>
+</div>

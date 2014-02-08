@@ -1,0 +1,14 @@
+<!-- StackOverflow -->
+<div class="panel {{'panel-success' if config.CONFIG_DB.has_stackoverflow else 'panel-default'}}">
+  <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#stackoverflow">StackOverflow</a></h4></div>
+  <div id="stackoverflow" class="panel-collapse collapse">
+    <div class="panel-body">
+      {{forms.text_field(form.stackoverflow_client_id)}}
+      {{forms.text_field(form.stackoverflow_client_secret)}}
+      {{forms.text_field(form.stackoverflow_key)}}
+      <p class="help-block">
+        <a href="http://stackapps.com/apps/oauth/register" target="_blank">Register</a> an application or <a href="http://stackapps.com/apps/oauth" target="_blank">manage</a> the existing ones on <a href="http://stackapps.com/" target="_blank">StackApps</a>.
+      </p>
+    </div>
+  </div>
+</div>

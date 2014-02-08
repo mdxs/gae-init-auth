@@ -1,0 +1,13 @@
+<!-- Windows Live -->
+<div class="panel {{'panel-success' if config.CONFIG_DB.has_windowslive else 'panel-default'}}">
+  <div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#oauth" href="#windowslive">Windows Live</a></h4></div>
+  <div id="windowslive" class="panel-collapse collapse">
+    <div class="panel-body">
+      {{forms.text_field(form.windowslive_client_id)}}
+      {{forms.text_field(form.windowslive_client_secret)}}
+      <p class="help-block">
+        Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>: <em>{{request.host_url[:-1]}}</em>
+      </p>
+    </div>
+  </div>
+</div>
