@@ -1,13 +1,11 @@
-# macro github_help()
-  Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>:
-  <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em>
-# endmacro
-
 {{
   forms.oauth_fields(
       'GitHub',
       (form.github_client_id, form.github_client_secret),
       config.CONFIG_DB.has_github,
-      github_help()
+      '''
+        Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>:
+        <em>%s</em>
+      ''' % ('%s%s' % (request.host_url[:-1], url_for('github_authorized')))
     )
 }}
