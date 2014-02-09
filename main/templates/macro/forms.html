@@ -98,26 +98,23 @@
 # endmacro
 
 
-# macro oauth_fields(name="OAuth provider", fields=None, is_has=False, help_text="")
-  <div class="panel {{'panel-success' if is_has else 'panel-default'}}">
+# macro oauth_fields(name, fields, is_has, help_text)
+<div class="panel panel-default">
   <div class="panel-heading">
     <h4 class="panel-title">
-      <a data-toggle="collapse" data-parent="#oauth" href="#{{slugify(name)}}">
-        {{name}}
-      </a>
+      <a data-toggle="collapse" data-parent="#oauth" href="#{{slugify(name)}}">{{name}}</a>
+      <i class="fa fa-check pull-right {{'hide' if not is_has}}"></i>
     </h4>
   </div>
   <div id="{{slugify(name)}}" class="panel-collapse collapse">
     <div class="panel-body">
-      # if fields
-        # for field in fields:
-          {{text_field(field)}}
-        # endfor
-      # endif
+      # for field in fields:
+        {{text_field(field)}}
+      # endfor
       # if help_text
-      <p class="help-block">
-        {{help_text | safe}}
-      </p>
+        <p class="help-block">
+          {{help_text | safe}}
+        </p>
       # endif
     </div>
   </div>
