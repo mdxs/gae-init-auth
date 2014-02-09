@@ -1,17 +1,13 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title">
-      <a data-toggle="collapse" data-parent="#oauth" href="#reddit">Reddit</a>
-      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_reddit}}"></i>
-    </h4>
-  </div>
-  <div id="reddit" class="panel-collapse collapse">
-    <div class="panel-body">
-      {{forms.text_field(form.reddit_client_id)}}
-      {{forms.text_field(form.reddit_client_secret)}}
-      <p class="help-block">
-        Redirect URL for <a href="https://ssl.reddit.com/prefs/apps/" target="_blank">Reddit application</a>: <em>{{url_for('reddit_authorized', _external=True)}}</em>
-      </p>
-    </div>
-  </div>
-</div>
+# macro reddit_help()
+  Redirect URL for <a href="https://ssl.reddit.com/prefs/apps/" target="_blank">Reddit application</a>:
+  <em>{{url_for('reddit_authorized', _external=True)}}</em>
+# endmacro
+
+{{
+  forms.oauth_fields(
+      'Reddit',
+      (form.reddit_client_id, form.reddit_client_secret),
+      config.CONFIG_DB.has_linkedin,
+      reddit_help()
+    )
+}}

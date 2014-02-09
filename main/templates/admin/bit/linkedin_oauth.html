@@ -1,17 +1,12 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title">
-      <a data-toggle="collapse" data-parent="#oauth" href="#linkedin">LinkedIn</a>
-      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_linkedin}}"></i>
-    </h4>
-  </div>
-  <div id="linkedin" class="panel-collapse collapse">
-    <div class="panel-body">
-      {{forms.text_field(form.linkedin_api_key)}}
-      {{forms.text_field(form.linkedin_secret_key)}}
-      <p class="help-block">
-        <a href="https://www.linkedin.com/secure/developer" target="_blank">LinkedIn Applications</a>
-      </p>
-    </div>
-  </div>
-</div>
+# macro linkedin_help()
+  <a href="https://www.linkedin.com/secure/developer" target="_blank">LinkedIn Applications</a>
+# endmacro
+
+{{
+  forms.oauth_fields(
+      'LinkedIn',
+      (form.linkedin_api_key, form.linkedin_secret_key),
+      config.CONFIG_DB.has_linkedin,
+      linkedin_help()
+    )
+}}

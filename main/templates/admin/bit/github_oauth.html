@@ -1,17 +1,13 @@
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h4 class="panel-title">
-      <a data-toggle="collapse" data-parent="#oauth" href="#github">GitHub</a>
-      <i class="fa fa-check pull-right {{'hide' if not config.CONFIG_DB.has_github}}"></i>
-    </h4>
-  </div>
-  <div id="github" class="panel-collapse collapse">
-    <div class="panel-body">
-      {{forms.text_field(form.github_client_id)}}
-      {{forms.text_field(form.github_client_secret)}}
-      <p class="help-block">
-        Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>: <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em>
-      </p>
-    </div>
-  </div>
-</div>
+# macro github_help()
+  Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>:
+  <em>{{'%s%s' % (request.host_url[:-1], url_for('github_authorized'))}}</em>
+# endmacro
+
+{{
+  forms.oauth_fields(
+      'GitHub',
+      (form.github_client_id, form.github_client_secret),
+      config.CONFIG_DB.has_github,
+      github_help()
+    )
+}}
