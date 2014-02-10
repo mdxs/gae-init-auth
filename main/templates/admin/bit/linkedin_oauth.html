@@ -1,12 +1,10 @@
-# macro linkedin_help()
-  <a href="https://www.linkedin.com/secure/developer" target="_blank">LinkedIn Applications</a>
-# endmacro
-
 {{
   forms.oauth_fields(
       'LinkedIn',
       (form.linkedin_api_key, form.linkedin_secret_key),
       config.CONFIG_DB.has_linkedin,
-      linkedin_help()
+      '''
+        <a href="https://www.linkedin.com/secure/developer" target="_blank">LinkedIn Applications</a>
+      '''
     )
 }}

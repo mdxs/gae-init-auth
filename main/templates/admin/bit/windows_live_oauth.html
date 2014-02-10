@@ -1,13 +1,11 @@
-# macro windows_live_help()
-  Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>:
-  <em>{{request.host_url[:-1]}}</em>
-# endmacro
-
 {{
   forms.oauth_fields(
       'Windows Live',
       (form.windowslive_client_id, form.windowslive_client_secret),
       config.CONFIG_DB.has_windowslive,
-      windows_live_help()
+      '''
+        Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Windows Live</a>:
+        <em>%s</em>
+      ''' % request.host_url[:-1]
     )
 }}
