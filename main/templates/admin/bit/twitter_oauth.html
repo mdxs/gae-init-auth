@@ -5,7 +5,7 @@
       config.CONFIG_DB.has_twitter,
       '''
         Callback URL for <a href="https://dev.twitter.com/apps" target="_blank">Twitter application</a>:
-        <em>%s</em>
-      ''' % ('%s%s' % (request.host_url[:-1], url_for('twitter_authorized')))
+        <em>%s%s</em>
+      ''' % (request.host_url[:-1], url_for('twitter_authorized'))
     )
 }}

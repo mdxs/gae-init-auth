@@ -5,7 +5,7 @@
       config.CONFIG_DB.has_dropbox,
       '''
         OAuth redirect URI for <a href="https://www.dropbox.com/developers/apps" target="_blank">Dropbox</a>:
-        <em>%s</em>
-      ''' % ('https://%s%s' % (request.host, url_for("dropbox_authorized")))
+        <em>https://%s%s</em>
+      ''' % (request.host, url_for("dropbox_authorized"))
     )
 }}

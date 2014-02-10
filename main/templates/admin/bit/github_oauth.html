@@ -5,7 +5,7 @@
       config.CONFIG_DB.has_github,
       '''
         Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>:
-        <em>%s</em>
-      ''' % ('%s%s' % (request.host_url[:-1], url_for('github_authorized')))
+        <em>%s%s</em>
+      ''' % (request.host_url[:-1], url_for('github_authorized'))
     )
 }}
