@@ -67,6 +67,16 @@
     There are no users matching the filters.
   </div>
 
+  # if request.args['permissions']
+    <div class="alert alert-info alert-dismissable {{'hide' if user_dbs | count == 0}}">
+      <a href="{{update_query_argument('permissions')}}" class="close" title="Remove permissions">&times;</a>
+      Showing users with permissions:
+      # for permission in request.args['permissions'].split(',')
+        <strong class="label label-info">{{permission}}</strong>
+      # endfor
+    </div>
+  # endif
+
   <div class="table-responsive {{'hide' if user_dbs | count == 0}}">
     <table class="table table-bordered">
       <thead>
@@ -76,6 +86,7 @@
           <th class="col-xs-2">{{utils.order_by_link('email', 'Email')}}</th>
           <th class="col-xs-2">{{utils.order_by_link('created', 'Created')}}</th>
           <th class="col-xs-2">{{utils.order_by_link('modified', 'Modified')}}</th>
+          <th class="col-xs-2">Permissions</th>
           <th class="text-center" title="Accounts"><i class="fa fa-key"></i></th>
         </tr>
       </thead>
@@ -107,6 +118,11 @@
               <time datetime="{{user_db.modified.__str__()[:-3]}}">
                 {{user_db.modified.strftime('%Y-%m-%d')}}
               </time>
+            </td>
+            <td>
+              # for permission in user_db.permissions
+                <a href="{{update_query_argument('permissions', permission)}}" class="label label-info">{{permission}}</a>
+              # endfor
             </td>
             <td class="text-nowrap">{{utils.auth_icons(user_db.auth_ids)}}</td>
           </tr>

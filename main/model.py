@@ -2,6 +2,7 @@
 
 import os
 
+from google.appengine.api import app_identity
 from google.appengine.ext import ndb
 
 import modelx
@@ -34,7 +35,7 @@ class Config(Base, modelx.ConfigX):
     ])
   bitbucket_key = ndb.StringProperty(default='')
   bitbucket_secret = ndb.StringProperty(default='')
-  brand_name = ndb.StringProperty(default='gae-init')
+  brand_name = ndb.StringProperty(default=app_identity.get_application_id())
   dropbox_app_key = ndb.StringProperty(default='')
   dropbox_app_secret = ndb.StringProperty(default='')
   facebook_app_id = ndb.StringProperty(default='')
@@ -103,6 +104,7 @@ class User(Base, modelx.UserX):
   auth_ids = ndb.StringProperty(repeated=True)
   active = ndb.BooleanProperty(default=True)
   admin = ndb.BooleanProperty(default=False)
+  permissions = ndb.StringProperty(repeated=True)
 
   _PROPERTIES = Base._PROPERTIES.union({
       'active',
@@ -112,4 +114,5 @@ class User(Base, modelx.UserX):
       'email',
       'name',
       'username',
+      'permissions',
     })
