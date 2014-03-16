@@ -48,6 +48,7 @@ class Config(Base, modelx.ConfigX):
   instagram_client_secret = ndb.StringProperty(default='')
   linkedin_api_key = ndb.StringProperty(default='')
   linkedin_secret_key = ndb.StringProperty(default='')
+  notify_on_new_user = ndb.BooleanProperty(default=True)
   reddit_client_id = ndb.StringProperty(default='')
   reddit_client_secret = ndb.StringProperty(default='')
   stackoverflow_client_id = ndb.StringProperty(default='')
@@ -81,6 +82,7 @@ class Config(Base, modelx.ConfigX):
       'instagram_client_secret',
       'linkedin_api_key',
       'linkedin_secret_key',
+      'notify_on_new_user',
       'reddit_client_id',
       'reddit_client_secret',
       'stackoverflow_client_id',

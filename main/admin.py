@@ -31,6 +31,7 @@ class ConfigUpdateForm(wtf.Form):
   instagram_client_secret = wtf.StringField('Instagram Client Secret', filters=[util.strip_filter])
   linkedin_api_key = wtf.StringField('LinkedIn API Key', filters=[util.strip_filter])
   linkedin_secret_key = wtf.StringField('LinkedIn Secret Key', filters=[util.strip_filter])
+  notify_on_new_user = wtf.BooleanField('Send an email notification when a user signs up')
   reddit_client_id = wtf.StringField('Reddit Key', filters=[util.strip_filter])
   reddit_client_secret = wtf.StringField('Reddit Secret', filters=[util.strip_filter])
   stackoverflow_client_id = wtf.StringField('Stack Overflow Client Id', filters=[util.strip_filter])
