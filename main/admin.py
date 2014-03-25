@@ -5,9 +5,9 @@ from google.appengine.api import app_identity
 import flask
 
 import auth
-import util
-import model
 import config
+import model
+import util
 
 from main import app
 
