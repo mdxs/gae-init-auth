@@ -980,7 +980,7 @@ yahoo_oauth = oauth.OAuth()
 
 yahoo = yahoo_oauth.remote_app(
     'yahoo',
-    base_url='http://social.yahooapis.com/',
+    base_url='https://social.yahooapis.com/',
     request_token_url='https://api.login.yahoo.com/oauth/v2/get_request_token',
     access_token_url='https://api.login.yahoo.com/oauth/v2/get_token',
     authorize_url='https://api.login.yahoo.com/oauth/v2/request_auth',
