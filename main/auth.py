@@ -94,6 +94,8 @@ def is_logged_in():
 # Decorators
 ###############################################################################
 def login_required(f):
+  decorator_order_guard(f, 'auth.login_required')
+
   @functools.wraps(f)
   def decorated_function(*args, **kws):
     if is_logged_in():
@@ -105,6 +107,8 @@ def login_required(f):
 
 
 def admin_required(f):
+  decorator_order_guard(f, 'auth.admin_required')
+
   @functools.wraps(f)
   def decorated_function(*args, **kws):
     if is_logged_in() and current_user_db().admin:
@@ -122,6 +126,8 @@ permission_registered = _signals.signal('permission-registered')
 
 def permission_required(permission=None, methods=None):
   def permission_decorator(f):
+    decorator_order_guard(f, 'auth.permission_required')
+
     # default to decorated function name as permission
     perm = permission or f.func_name
     meths = [m.upper() for m in methods] if methods else None
@@ -201,7 +207,7 @@ def signout():
 @app.route('/signin/google/')
 def signin_google():
   google_url = users.create_login_url(
-      flask.url_for('google_authorized', next=util.get_next_url())
+      flask.url_for('google_authorized', **flask.request.args)
     )
   return flask.redirect(google_url)
 
@@ -277,7 +283,7 @@ def signin_twitter():
   flask.session.pop('oauth_token', None)
   try:
     return twitter.authorize(
-        callback=flask.url_for('twitter_authorized', next=util.get_next_url()),
+        callback=flask.url_for('twitter_authorized', **flask.request.args),
       )
   except:
     flask.flash(
@@ -337,10 +343,9 @@ def get_facebook_oauth_token():
 
 @app.route('/signin/facebook/')
 def signin_facebook():
-  return facebook.authorize(callback=flask.url_for('facebook_authorized',
-      next=util.get_next_url(),
-      _external=True),
-    )
+  return facebook.authorize(callback=flask.url_for(
+      'facebook_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_facebook(response):
@@ -392,12 +397,9 @@ def get_bitbucket_oauth_token():
 @app.route('/signin/bitbucket/')
 def signin_bitbucket():
   flask.session['oauth_token'] = None
-  return bitbucket.authorize(
-      callback=flask.url_for('bitbucket_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        )
-    )
+  return bitbucket.authorize(callback=flask.url_for(
+      'bitbucket_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_bitbucket(response):
@@ -455,11 +457,9 @@ def get_dropbox_oauth_token():
 @app.route('/signin/dropbox/')
 def signin_dropbox():
   flask.session['oauth_token'] = None
-  return dropbox.authorize(
-      callback=re.sub(r'^http:', 'https:',
-          flask.url_for('dropbox_authorized', _external=True)
-        )
-    )
+  return dropbox.authorize(callback=re.sub(r'^http:', 'https:', flask.url_for(
+      'dropbox_authorized', _external=True, **flask.request.args
+    )))
 
 
 def retrieve_user_from_dropbox(response):
@@ -510,12 +510,9 @@ def get_github_oauth_token():
 
 @app.route('/signin/github/')
 def signin_github():
-  return github.authorize(
-      callback=flask.url_for('github_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        )
-    )
+  return github.authorize(callback=flask.url_for(
+      'github_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_github(response):
@@ -571,13 +568,9 @@ def get_instagram_oauth_token():
 
 @app.route('/signin/instagram/')
 def signin_instagram():
-  return instagram.authorize(
-      callback=flask.url_for(
-          'instagram_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        )
-    )
+  return instagram.authorize(callback=flask.url_for(
+      'instagram_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_instagram(response):
@@ -652,13 +645,9 @@ def get_linkedin_oauth_token():
 @app.route('/signin/linkedin/')
 def signin_linkedin():
   flask.session['access_token'] = None
-  return linkedin.authorize(
-      callback=flask.url_for(
-          'linkedin_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        ),
-    )
+  return linkedin.authorize(callback=flask.url_for(
+      'linkedin_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_linkedin(response):
@@ -746,12 +735,9 @@ def get_reddit_oauth_token():
 
 @app.route('/signin/reddit/')
 def signin_reddit():
-  return reddit.authorize(
-      callback=flask.url_for(
-          'reddit_authorized',
-          _external=True,
-        )
-    )
+  return reddit.authorize(callback=flask.url_for(
+      'reddit_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_reddit(response):
@@ -821,12 +807,9 @@ def get_stackoverflow_oauth_token():
 @app.route('/signin/stackoverflow/')
 def signin_stackoverflow():
   flask.session['oauth_token'] = None
-  return stackoverflow.authorize(
-      callback=flask.url_for('stackoverflow_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        )
-    )
+  return stackoverflow.authorize(callback=flask.url_for(
+      'stackoverflow_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_stackoverflow(response):
@@ -879,13 +862,9 @@ def get_vk_oauth_token():
 
 @app.route('/signin/vk/')
 def signin_vk():
-  return vk.authorize(
-      callback=flask.url_for(
-          'vk_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        )
-    )
+  return vk.authorize(callback=flask.url_for(
+      'vk_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_vk(response):
@@ -950,13 +929,9 @@ def get_windowslive_oauth_token():
 
 @app.route('/signin/windowslive/')
 def signin_windowslive():
-  return windowslive.authorize(
-      callback=flask.url_for(
-          'windowslive_authorized',
-          next=util.get_next_url(),
-          _external=True,
-        )
-    )
+  return windowslive.authorize(callback=flask.url_for(
+      'windowslive_authorized', _external=True, **flask.request.args
+    ))
 
 
 def retrieve_user_from_windowslive(response):
@@ -1030,7 +1005,7 @@ def signin_yahoo():
   flask.session.pop('oauth_token', None)
   try:
     return yahoo.authorize(
-        callback=flask.url_for('yahoo_authorized', next=util.get_next_url()),
+        callback=flask.url_for('yahoo_authorized', **flask.request.args),
       )
   except:
     flask.flash(
@@ -1063,6 +1038,14 @@ def retrieve_user_from_yahoo(response):
 ###############################################################################
 # Helpers
 ###############################################################################
+def decorator_order_guard(f, decorator_name):
+  if f in app.view_functions.values():
+    raise SyntaxError(
+        'Do not use %s above app.route decorators as it would not be checked. '
+        'Instead move the line below the app.route lines.' % decorator_name
+      )
+
+
 def create_user_db(auth_id, name, username, email='', **params):
   username = re.sub(r'_+|-+|\s+', '.', username.split('@')[0].lower().strip())
   new_username = username
@@ -1088,7 +1071,7 @@ def signin_user_db(user_db):
   if not user_db:
     return flask.redirect(flask.url_for('signin'))
   flask_user_db = FlaskUser(user_db)
-  if login.login_user(flask_user_db):
+  if login.login_user(flask_user_db, remember=util.param('remember', bool)):
     user_db.put_async()
     flask.flash('Hello %s, welcome to %s.' % (
         user_db.name, config.CONFIG_DB.brand_name,
