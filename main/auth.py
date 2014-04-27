@@ -206,9 +206,8 @@ def signout():
 ###############################################################################
 @app.route('/signin/google/')
 def signin_google():
-  google_url = users.create_login_url(
-      flask.url_for('google_authorized', **flask.request.args)
-    )
+  save_request_params()
+  google_url = users.create_login_url(flask.url_for('google_authorized'))
   return flask.redirect(google_url)
 
 
@@ -281,10 +280,9 @@ def get_twitter_token():
 @app.route('/signin/twitter/')
 def signin_twitter():
   flask.session.pop('oauth_token', None)
+  save_request_params()
   try:
-    return twitter.authorize(
-        callback=flask.url_for('twitter_authorized', **flask.request.args),
-      )
+    return twitter.authorize(callback=flask.url_for('twitter_authorized'))
   except:
     flask.flash(
         'Something went wrong with Twitter sign in. Please try again.',
@@ -343,8 +341,9 @@ def get_facebook_oauth_token():
 
 @app.route('/signin/facebook/')
 def signin_facebook():
+  save_request_params()
   return facebook.authorize(callback=flask.url_for(
-      'facebook_authorized', _external=True, **flask.request.args
+      'facebook_authorized', _external=True
     ))
 
 
@@ -383,7 +382,7 @@ def bitbucket_authorized(resp):
   if resp is None:
     return 'Access denied'
   flask.session['oauth_token'] = (
-    resp['oauth_token'], resp['oauth_token_secret'])
+      resp['oauth_token'], resp['oauth_token_secret'])
   me = bitbucket.get('user')
   user_db = retrieve_user_from_bitbucket(me.data['user'])
   return signin_user_db(user_db)
@@ -397,8 +396,9 @@ def get_bitbucket_oauth_token():
 @app.route('/signin/bitbucket/')
 def signin_bitbucket():
   flask.session['oauth_token'] = None
+  save_request_params()
   return bitbucket.authorize(callback=flask.url_for(
-      'bitbucket_authorized', _external=True, **flask.request.args
+      'bitbucket_authorized', _external=True
     ))
 
 
@@ -457,8 +457,9 @@ def get_dropbox_oauth_token():
 @app.route('/signin/dropbox/')
 def signin_dropbox():
   flask.session['oauth_token'] = None
+  save_request_params()
   return dropbox.authorize(callback=re.sub(r'^http:', 'https:', flask.url_for(
-      'dropbox_authorized', _external=True, **flask.request.args
+      'dropbox_authorized', _external=True
     )))
 
 
@@ -510,8 +511,9 @@ def get_github_oauth_token():
 
 @app.route('/signin/github/')
 def signin_github():
+  save_request_params()
   return github.authorize(callback=flask.url_for(
-      'github_authorized', _external=True, **flask.request.args
+      'github_authorized', _external=True
     ))
 
 
@@ -568,8 +570,9 @@ def get_instagram_oauth_token():
 
 @app.route('/signin/instagram/')
 def signin_instagram():
+  save_request_params()
   return instagram.authorize(callback=flask.url_for(
-      'instagram_authorized', _external=True, **flask.request.args
+      'instagram_authorized', _external=True
     ))
 
 
@@ -645,8 +648,9 @@ def get_linkedin_oauth_token():
 @app.route('/signin/linkedin/')
 def signin_linkedin():
   flask.session['access_token'] = None
+  save_request_params()
   return linkedin.authorize(callback=flask.url_for(
-      'linkedin_authorized', _external=True, **flask.request.args
+      'linkedin_authorized', _external=True
     ))
 
 
@@ -735,8 +739,9 @@ def get_reddit_oauth_token():
 
 @app.route('/signin/reddit/')
 def signin_reddit():
+  save_request_params()
   return reddit.authorize(callback=flask.url_for(
-      'reddit_authorized', _external=True, **flask.request.args
+      'reddit_authorized', _external=True
     ))
 
 
@@ -807,8 +812,9 @@ def get_stackoverflow_oauth_token():
 @app.route('/signin/stackoverflow/')
 def signin_stackoverflow():
   flask.session['oauth_token'] = None
+  save_request_params()
   return stackoverflow.authorize(callback=flask.url_for(
-      'stackoverflow_authorized', _external=True, **flask.request.args
+      'stackoverflow_authorized', _external=True
     ))
 
 
@@ -862,8 +868,9 @@ def get_vk_oauth_token():
 
 @app.route('/signin/vk/')
 def signin_vk():
+  save_request_params()
   return vk.authorize(callback=flask.url_for(
-      'vk_authorized', _external=True, **flask.request.args
+      'vk_authorized', _external=True
     ))
 
 
@@ -929,8 +936,9 @@ def get_windowslive_oauth_token():
 
 @app.route('/signin/windowslive/')
 def signin_windowslive():
+  save_request_params()
   return windowslive.authorize(callback=flask.url_for(
-      'windowslive_authorized', _external=True, **flask.request.args
+      'windowslive_authorized', _external=True
     ))
 
 
@@ -1002,10 +1010,11 @@ def get_yahoo_oauth_token():
 
 @app.route('/signin/yahoo/')
 def signin_yahoo():
+  save_request_params()
   flask.session.pop('oauth_token', None)
   try:
     return yahoo.authorize(
-        callback=flask.url_for('yahoo_authorized', **flask.request.args),
+        callback=flask.url_for('yahoo_authorized')
       )
   except:
     flask.flash(
@@ -1066,17 +1075,28 @@ def create_user_db(auth_id, name, username, email='', **params):
   return user_db
 
 
+def save_request_params():
+  flask.session['auth-params'] = {
+      'next': util.get_next_url(),
+      'remember': util.param('remember', bool),
+    }
+
+
 @ndb.toplevel
 def signin_user_db(user_db):
   if not user_db:
     return flask.redirect(flask.url_for('signin'))
   flask_user_db = FlaskUser(user_db)
-  if login.login_user(flask_user_db, remember=util.param('remember', bool)):
+  auth_params = flask.session.get('auth-params', {
+      'next': flask.url_for('welcome'),
+      'remember': False,
+    })
+  if login.login_user(flask_user_db, remember=auth_params['remember']):
     user_db.put_async()
     flask.flash('Hello %s, welcome to %s.' % (
         user_db.name, config.CONFIG_DB.brand_name,
       ), category='success')
-    return flask.redirect(util.get_next_url())
+    return flask.redirect(auth_params['next'])
   else:
     flask.flash('Sorry, but you could not sign in.', category='danger')
     return flask.redirect(flask.url_for('signin'))
