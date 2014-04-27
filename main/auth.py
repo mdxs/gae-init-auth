@@ -1076,11 +1076,10 @@ def create_user_db(auth_id, name, username, email='', **params):
 
 
 def save_request_params():
-  auth_params = {
+  flask.session['auth-params'] = {
       'next': util.get_next_url(),
       'remember': util.param('remember', bool),
     }
-  flask.session['auth-params'] = auth_params
 
 
 @ndb.toplevel
@@ -1092,10 +1091,6 @@ def signin_user_db(user_db):
       'next': flask.url_for('welcome'),
       'remember': False,
     })
-  try:
-    del flask.session['auth-params']
-  except KeyError:
-    pass
   if login.login_user(flask_user_db, remember=auth_params['remember']):
     user_db.put_async()
     flask.flash('Hello %s, welcome to %s.' % (
