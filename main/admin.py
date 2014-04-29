@@ -13,7 +13,7 @@ from main import app
 
 
 class ConfigUpdateForm(wtf.Form):
-  analytics_id = wtf.StringField('Analytics ID', filters=[util.strip_filter])
+  analytics_id = wtf.StringField('Tracking ID', filters=[util.strip_filter])
   announcement_html = wtf.TextAreaField('Announcement HTML', filters=[util.strip_filter])
   announcement_type = wtf.SelectField('Announcement Type', choices=[(t, t.title()) for t in model.Config.announcement_type._choices])
   bitbucket_key = wtf.StringField('Bitbucket Key', filters=[util.strip_filter])
@@ -24,7 +24,7 @@ class ConfigUpdateForm(wtf.Form):
   facebook_app_id = wtf.StringField('Facebook App ID', filters=[util.strip_filter])
   facebook_app_secret = wtf.StringField('Facebook App Secret', filters=[util.strip_filter])
   feedback_email = wtf.StringField('Feedback Email', [wtf.validators.optional(), wtf.validators.email()], filters=[util.email_filter])
-  flask_secret_key = wtf.StringField('Flask Secret Key', [wtf.validators.required()], filters=[util.strip_filter])
+  flask_secret_key = wtf.StringField('Secret Key', [wtf.validators.optional()], filters=[util.strip_filter])
   github_client_id = wtf.StringField('GitHub Client ID', filters=[util.strip_filter])
   github_client_secret = wtf.StringField('GitHub Client Secret', filters=[util.strip_filter])
   instagram_client_id = wtf.StringField('Instagram Client ID', filters=[util.strip_filter])
@@ -55,6 +55,8 @@ def admin_config_update():
   form = ConfigUpdateForm(obj=config_db)
   if form.validate_on_submit():
     form.populate_obj(config_db)
+    if not config_db.flask_secret_key:
+      config_db.flask_secret_key = util.uuid()
     config_db.put()
     reload(config)
     app.config.update(CONFIG_DB=config_db)
