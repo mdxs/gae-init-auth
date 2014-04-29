@@ -90,7 +90,7 @@ def user_update(user_id):
   form = UserUpdateForm(obj=user_db)
   for permission in user_db.permissions:
     form.permissions.choices.append((permission, permission))
-  form.permissions.choices = sorted(set(form.permissions.choices))
+  form.permissions.choices = dict(sorted(set(form.permissions.choices)))
   if form.validate_on_submit():
     if not util.is_valid_username(form.username.data):
       form.username.errors.append('This username is invalid.')
@@ -145,10 +145,10 @@ class UserMergeForm(wtf.Form):
   user_key = wtf.StringField('User Key', [wtf.validators.required()])
   user_keys = wtf.StringField('User Keys', [wtf.validators.required()])
   username = wtf.StringField('Username', [wtf.validators.optional()])
-  name = wtf.StringField('Merged Name',
+  name = wtf.StringField('Name (merged)',
       [wtf.validators.required()], filters=[util.strip_filter],
     )
-  email = wtf.StringField('Merged Email',
+  email = wtf.StringField('Email (merged)',
       [wtf.validators.optional(), wtf.validators.email()],
       filters=[util.email_filter],
     )
