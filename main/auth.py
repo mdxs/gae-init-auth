@@ -382,7 +382,8 @@ def bitbucket_authorized(resp):
   if resp is None:
     return 'Access denied'
   flask.session['oauth_token'] = (
-      resp['oauth_token'], resp['oauth_token_secret'])
+      resp['oauth_token'], resp['oauth_token_secret'],
+    )
   me = bitbucket.get('user')
   user_db = retrieve_user_from_bitbucket(me.data['user'])
   return signin_user_db(user_db)
