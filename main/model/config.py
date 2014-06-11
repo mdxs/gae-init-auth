@@ -1,27 +1,15 @@
 # coding: utf-8
 
+from __future__ import absolute_import
+
 from google.appengine.ext import ndb
 
 import config
-import modelx
+import model
 import util
 
 
-class Base(ndb.Model, modelx.BaseX):
-  created = ndb.DateTimeProperty(auto_now_add=True)
-  modified = ndb.DateTimeProperty(auto_now=True)
-  version = ndb.IntegerProperty(default=config.CURRENT_VERSION_TIMESTAMP)
-
-  _PROPERTIES = {
-      'key',
-      'id',
-      'version',
-      'created',
-      'modified',
-    }
-
-
-class Config(Base, modelx.ConfigX):
+class Config(model.Base):
   analytics_id = ndb.StringProperty(default='')
   announcement_html = ndb.TextProperty(default='')
   announcement_type = ndb.StringProperty(default='info', choices=[
@@ -57,7 +45,55 @@ class Config(Base, modelx.ConfigX):
   yahoo_consumer_key = ndb.StringProperty(default='')
   yahoo_consumer_secret = ndb.StringProperty(default='')
 
-  _PROPERTIES = Base._PROPERTIES.union({
+  @property
+  def has_bitbucket(self):
+    return bool(self.bitbucket_key and self.bitbucket_secret)
+
+  @property
+  def has_dropbox(self):
+    return bool(self.dropbox_app_key and self.dropbox_app_secret)
+
+  @property
+  def has_facebook(self):
+    return bool(self.facebook_app_id and self.facebook_app_secret)
+
+  @property
+  def has_github(self):
+    return bool(self.github_client_id and self.github_client_secret)
+
+  @property
+  def has_instagram(self):
+    return bool(self.instagram_client_id and self.instagram_client_secret)
+
+  @property
+  def has_linkedin(self):
+    return bool(self.linkedin_api_key and self.linkedin_secret_key)
+
+  @property
+  def has_reddit(self):
+    return bool(self.reddit_client_id and self.reddit_client_secret)
+
+  @property
+  def has_stackoverflow(self):
+    return bool(self.stackoverflow_client_id and self.stackoverflow_client_secret and self.stackoverflow_key)
+
+  @property
+  def has_twitter(self):
+    return bool(self.twitter_consumer_key and self.twitter_consumer_secret)
+
+  @property
+  def has_vk(self):
+    return bool(self.vk_app_id and self.vk_app_secret)
+
+  @property
+  def has_windowslive(self):
+    return bool(self.windowslive_client_id and self.windowslive_client_secret)
+
+  @property
+  def has_yahoo(self):
+    return bool(self.yahoo_consumer_key and self.yahoo_consumer_secret)
+
+  _PROPERTIES = model.Base._PROPERTIES.union({
       'analytics_id',
       'announcement_html',
       'announcement_type',
@@ -92,23 +128,6 @@ class Config(Base, modelx.ConfigX):
       'yahoo_consumer_secret',
     })
 
-
-class User(Base, modelx.UserX):
-  name = ndb.StringProperty(required=True)
-  username = ndb.StringProperty(required=True)
-  email = ndb.StringProperty(default='')
-  auth_ids = ndb.StringProperty(repeated=True)
-  active = ndb.BooleanProperty(default=True)
-  admin = ndb.BooleanProperty(default=False)
-  permissions = ndb.StringProperty(repeated=True)
-
-  _PROPERTIES = Base._PROPERTIES.union({
-      'active',
-      'admin',
-      'auth_ids',
-      'avatar_url',
-      'email',
-      'name',
-      'username',
-      'permissions',
-    })
+  @classmethod
+  def get_master_db(cls):
+    return cls.get_or_insert('master')
