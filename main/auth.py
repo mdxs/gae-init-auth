@@ -176,7 +176,7 @@ def signin():
   stackoverflow_signin_url = flask.url_for('signin_stackoverflow', next=next_url)
   twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
   vk_signin_url = flask.url_for('signin_vk', next=next_url)
-  windowslive_signin_url = flask.url_for('signin_windowslive', next=next_url)
+  microsoft_signin_url = flask.url_for('signin_microsoft', next=next_url)
   yahoo_signin_url = flask.url_for('signin_yahoo', next=next_url)
 
   return flask.render_template(
@@ -194,7 +194,7 @@ def signin():
       stackoverflow_signin_url=stackoverflow_signin_url,
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
-      windowslive_signin_url=windowslive_signin_url,
+      microsoft_signin_url=microsoft_signin_url,
       yahoo_signin_url=yahoo_signin_url,
       next_url=next_url,
     )
@@ -895,34 +895,34 @@ def retrieve_user_from_vk(response):
 
 
 ###############################################################################
-# Windows Live
+# Microsoft
 ###############################################################################
-windowslive_oauth = oauth.OAuth()
+microsoft_oauth = oauth.OAuth()
 
-windowslive = windowslive_oauth.remote_app(
-    'windowslive',
+microsoft = microsoft_oauth.remote_app(
+    'microsoft',
     base_url='https://apis.live.net/v5.0/',
     request_token_url=None,
     access_token_url='https://login.live.com/oauth20_token.srf',
     access_token_method='POST',
     access_token_params={'grant_type': 'authorization_code'},
     authorize_url='https://login.live.com/oauth20_authorize.srf',
-    consumer_key=model.Config.get_master_db().windowslive_client_id,
-    consumer_secret=model.Config.get_master_db().windowslive_client_secret,
+    consumer_key=model.Config.get_master_db().microsoft_client_id,
+    consumer_secret=model.Config.get_master_db().microsoft_client_secret,
     request_token_params={'scope': 'wl.emails'},
   )
 
 
-@app.route('/_s/callback/windowslive/oauth-authorized/')
-@windowslive.authorized_handler
-def windowslive_authorized(resp):
+@app.route('/_s/callback/microsoft/oauth-authorized/')
+@microsoft.authorized_handler
+def microsoft_authorized(resp):
   if resp is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
   flask.session['oauth_token'] = (resp['access_token'], '')
-  me = windowslive.get(
+  me = microsoft.get(
       'me',
       data={'access_token': resp['access_token']},
       headers={'accept-encoding': 'identity'},
@@ -932,25 +932,25 @@ def windowslive_authorized(resp):
         me['code'],
         me['message'],
       )
-  user_db = retrieve_user_from_windowslive(me)
+  user_db = retrieve_user_from_microsoft(me)
   return signin_user_db(user_db)
 
 
-@windowslive.tokengetter
-def get_windowslive_oauth_token():
+@microsoft.tokengetter
+def get_microsoft_oauth_token():
   return flask.session.get('oauth_token')
 
 
-@app.route('/signin/windowslive/')
-def signin_windowslive():
+@app.route('/signin/microsoft/')
+def signin_microsoft():
   save_request_params()
-  return windowslive.authorize(callback=flask.url_for(
-      'windowslive_authorized', _external=True
+  return microsoft.authorize(callback=flask.url_for(
+      'microsoft_authorized', _external=True
     ))
 
 
-def retrieve_user_from_windowslive(response):
-  auth_id = 'windowslive_%s' % response['id']
+def retrieve_user_from_microsoft(response):
+  auth_id = 'microsoft_%s' % response['id']
   user_db = model.User.retrieve_one_by('auth_ids', auth_id)
   if user_db:
     return user_db

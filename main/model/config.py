@@ -30,6 +30,8 @@ class Config(model.Base):
   instagram_client_secret = ndb.StringProperty(default='')
   linkedin_api_key = ndb.StringProperty(default='')
   linkedin_secret_key = ndb.StringProperty(default='')
+  microsoft_client_id = ndb.StringProperty(default='')
+  microsoft_client_secret = ndb.StringProperty(default='')
   notify_on_new_user = ndb.BooleanProperty(default=True)
   reddit_client_id = ndb.StringProperty(default='')
   reddit_client_secret = ndb.StringProperty(default='')
@@ -40,8 +42,6 @@ class Config(model.Base):
   twitter_consumer_secret = ndb.StringProperty(default='')
   vk_app_id = ndb.StringProperty(default='')
   vk_app_secret = ndb.StringProperty(default='')
-  windowslive_client_id = ndb.StringProperty(default='')
-  windowslive_client_secret = ndb.StringProperty(default='')
   yahoo_consumer_key = ndb.StringProperty(default='')
   yahoo_consumer_secret = ndb.StringProperty(default='')
 
@@ -86,8 +86,8 @@ class Config(model.Base):
     return bool(self.vk_app_id and self.vk_app_secret)
 
   @property
-  def has_windowslive(self):
-    return bool(self.windowslive_client_id and self.windowslive_client_secret)
+  def has_microsoft(self):
+    return bool(self.microsoft_client_id and self.microsoft_client_secret)
 
   @property
   def has_yahoo(self):
@@ -112,6 +112,8 @@ class Config(model.Base):
       'instagram_client_secret',
       'linkedin_api_key',
       'linkedin_secret_key',
+      'microsoft_client_id',
+      'microsoft_client_secret',
       'notify_on_new_user',
       'reddit_client_id',
       'reddit_client_secret',
@@ -122,8 +124,6 @@ class Config(model.Base):
       'twitter_consumer_secret',
       'vk_app_id',
       'vk_app_secret',
-      'windowslive_client_id',
-      'windowslive_client_secret',
       'yahoo_consumer_key',
       'yahoo_consumer_secret',
     })

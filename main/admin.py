@@ -31,6 +31,8 @@ class ConfigUpdateForm(wtf.Form):
   instagram_client_secret = wtf.StringField('Client Secret', filters=[util.strip_filter])
   linkedin_api_key = wtf.StringField('API Key', filters=[util.strip_filter])
   linkedin_secret_key = wtf.StringField('Secret Key', filters=[util.strip_filter])
+  microsoft_client_id = wtf.StringField('Client ID', filters=[util.strip_filter])
+  microsoft_client_secret = wtf.StringField('Client Secret', filters=[util.strip_filter])
   notify_on_new_user = wtf.BooleanField('Send an email notification when a user signs up')
   reddit_client_id = wtf.StringField('Key', filters=[util.strip_filter])
   reddit_client_secret = wtf.StringField('Secret', filters=[util.strip_filter])
@@ -41,8 +43,6 @@ class ConfigUpdateForm(wtf.Form):
   twitter_consumer_secret = wtf.StringField('Consumer Secret', filters=[util.strip_filter])
   vk_app_id = wtf.StringField('App ID', filters=[util.strip_filter])
   vk_app_secret = wtf.StringField('App Secret', filters=[util.strip_filter])
-  windowslive_client_id = wtf.StringField('Client ID', filters=[util.strip_filter])
-  windowslive_client_secret = wtf.StringField('Client secret', filters=[util.strip_filter])
   yahoo_consumer_key = wtf.StringField('Consumer Key', filters=[util.strip_filter])
   yahoo_consumer_secret = wtf.StringField('Consumer Secret', filters=[util.strip_filter])
 
