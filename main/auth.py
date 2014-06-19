@@ -411,7 +411,7 @@ def signin_bitbucket():
 
 def retrieve_user_from_bitbucket(response):
   auth_id = 'bitbucket_%s' % response['username']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
   if response['first_name'] or response['last_name']:
@@ -472,7 +472,7 @@ def signin_dropbox():
 
 def retrieve_user_from_dropbox(response):
   auth_id = 'dropbox_%s' % response['uid']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
 
@@ -526,7 +526,7 @@ def signin_github():
 
 def retrieve_user_from_github(response):
   auth_id = 'github_%s' % str(response['id'])
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
   return create_user_db(
@@ -585,7 +585,7 @@ def signin_instagram():
 
 def retrieve_user_from_instagram(response):
   auth_id = 'instagram_%s' % response['id']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
 
@@ -663,7 +663,7 @@ def signin_linkedin():
 
 def retrieve_user_from_linkedin(response):
   auth_id = 'linkedin_%s' % response['id']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
   full_name = ' '.join([response['firstName'], response['lastName']]).strip()
@@ -754,7 +754,7 @@ def signin_reddit():
 
 def retrieve_user_from_reddit(response):
   auth_id = 'reddit_%s' % response['id']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
 
@@ -827,7 +827,7 @@ def signin_stackoverflow():
 
 def retrieve_user_from_stackoverflow(response):
   auth_id = 'stackoverflow_%s' % response['user_id']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
   return create_user_db(
@@ -883,7 +883,7 @@ def signin_vk():
 
 def retrieve_user_from_vk(response):
   auth_id = 'vk_%s' % response['user_id']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
 
@@ -951,7 +951,7 @@ def signin_microsoft():
 
 def retrieve_user_from_microsoft(response):
   auth_id = 'microsoft_%s' % response['id']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
   email = response['emails']['preferred'] or response['emails']['account']
@@ -1033,7 +1033,7 @@ def signin_yahoo():
 
 def retrieve_user_from_yahoo(response):
   auth_id = 'yahoo_%s' % response['guid']
-  user_db = model.User.retrieve_one_by('auth_ids', auth_id)
+  user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
   if response.get('givenName') or response.get('familyName'):
