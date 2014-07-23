@@ -2,7 +2,6 @@
   forms.oauth_fields(
       'Microsoft',
       (form.microsoft_client_id, form.microsoft_client_secret),
-      config.CONFIG_DB.has_microsoft,
       '''
         Redirect domain for <a href="https://account.live.com/developers/applications" target="_blank">Microsoft Accounts</a>:
         <em>%s</em>

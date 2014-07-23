@@ -2,7 +2,6 @@
   forms.oauth_fields(
       'GitHub',
       (form.github_client_id, form.github_client_secret),
-      config.CONFIG_DB.has_github,
       '''
         Callback URL for <a href="https://github.com/settings/applications" target="_blank">GitHub application</a>:
         <em>%s</em>
