@@ -536,7 +536,8 @@ def retrieve_user_from_github(response):
       auth_id,
       response['name'] or response['login'],
       response['login'],
-      response['email'] or '',
+      response.get('email', ''),
+      verified=bool(response.get('email', '')),
     )
 
 
@@ -960,9 +961,10 @@ def retrieve_user_from_microsoft(response):
   email = response['emails']['preferred'] or response['emails']['account']
   return create_user_db(
       auth_id,
-      response['name'] or '',
+      response.get('name', ''),
       email,
-      email=email,
+      email,
+      verified=bool(email),
     )
 
 
@@ -1046,11 +1048,14 @@ def retrieve_user_from_yahoo(response):
   emails = [
       email for email in response.get('emails', []) if email.get('handle')]
   emails.sort(key=lambda e: e.get('primary', False))
+
+  email = emails[0]['handle'] if emails else ''
   return create_user_db(
       auth_id,
       full_name,
       response['nickname'],
-      emails[0]['handle'] if emails else ''
+      email,
+      verified=bool(email),
     )
 
 
