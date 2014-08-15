@@ -40,6 +40,7 @@ class Config(model.Base):
   stackoverflow_key = ndb.StringProperty(default='')
   twitter_consumer_key = ndb.StringProperty(default='')
   twitter_consumer_secret = ndb.StringProperty(default='')
+  verify_email = ndb.BooleanProperty(default=True)
   vk_app_id = ndb.StringProperty(default='')
   vk_app_secret = ndb.StringProperty(default='')
   yahoo_consumer_key = ndb.StringProperty(default='')
@@ -122,6 +123,7 @@ class Config(model.Base):
       'stackoverflow_key',
       'twitter_consumer_key',
       'twitter_consumer_secret',
+      'verify_email',
       'vk_app_id',
       'vk_app_secret',
       'yahoo_consumer_key',
