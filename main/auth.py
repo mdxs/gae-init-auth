@@ -534,8 +534,8 @@ def retrieve_user_from_github(response):
     return user_db
   return create_user_db(
       auth_id,
-      response['name'] or response['login'],
-      response['login'],
+      response.get('name', response.get('login')),
+      response.get('login'),
       response.get('email', ''),
       verified=bool(response.get('email', '')),
     )
@@ -595,8 +595,8 @@ def retrieve_user_from_instagram(response):
 
   return create_user_db(
       auth_id,
-      response['full_name'] or response['username'],
-      unidecode.unidecode(response['username']),
+      response.get('full_name', response.get('username')),
+      unidecode.unidecode(response.get('username')),
     )
 
 
