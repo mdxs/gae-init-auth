@@ -3,7 +3,6 @@
 from base64 import b64encode
 import functools
 import re
-import unidecode
 
 from flask.ext import login
 from flask.ext import oauth
@@ -482,7 +481,7 @@ def retrieve_user_from_dropbox(response):
   return create_user_db(
       auth_id,
       response['display_name'],
-      unidecode.unidecode(response['display_name']),
+      response['display_name'],
     )
 
 
@@ -596,7 +595,7 @@ def retrieve_user_from_instagram(response):
   return create_user_db(
       auth_id,
       response.get('full_name', response.get('username')),
-      unidecode.unidecode(response.get('username')),
+      response.get('username'),
     )
 
 
@@ -674,7 +673,7 @@ def retrieve_user_from_linkedin(response):
   return create_user_db(
       auth_id,
       full_name,
-      response['emailAddress'] or unidecode.unidecode(full_name),
+      response['emailAddress'] or full_name,
       response['emailAddress'],
     )
 
@@ -765,7 +764,7 @@ def retrieve_user_from_reddit(response):
   return create_user_db(
       auth_id,
       response['name'],
-      unidecode.unidecode(response['name']),
+      response['name'],
     )
 
 
@@ -837,7 +836,7 @@ def retrieve_user_from_stackoverflow(response):
   return create_user_db(
       auth_id,
       response['display_name'],
-      unidecode.unidecode(response['display_name']),
+      response['display_name'],
     )
 
 
@@ -894,7 +893,7 @@ def retrieve_user_from_vk(response):
   return create_user_db(
       auth_id,
       response['user_name'],
-      unidecode.unidecode(response['user_name']),
+      response['user_name'],
     )
 
 
