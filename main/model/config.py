@@ -18,6 +18,7 @@ class Config(model.Base):
   bitbucket_key = ndb.StringProperty(default='')
   bitbucket_secret = ndb.StringProperty(default='')
   brand_name = ndb.StringProperty(default=config.APPLICATION_ID)
+  check_unique_email = ndb.BooleanProperty(default=True)
   dropbox_app_key = ndb.StringProperty(default='')
   dropbox_app_secret = ndb.StringProperty(default='')
   facebook_app_id = ndb.StringProperty(default='')
@@ -101,6 +102,7 @@ class Config(model.Base):
       'bitbucket_key',
       'bitbucket_secret',
       'brand_name',
+      'check_unique_email',
       'dropbox_app_key',
       'dropbox_app_secret',
       'facebook_app_id',

@@ -19,6 +19,7 @@ class ConfigUpdateForm(wtf.Form):
   bitbucket_key = wtf.StringField('Key', filters=[util.strip_filter])
   bitbucket_secret = wtf.StringField('Secret', filters=[util.strip_filter])
   brand_name = wtf.StringField('Brand Name', [wtf.validators.required()], filters=[util.strip_filter])
+  check_unique_email = wtf.BooleanField('Check for the uniqueness of the verified emails')
   dropbox_app_key = wtf.StringField('App Key', filters=[util.strip_filter])
   dropbox_app_secret = wtf.StringField('App Secret', filters=[util.strip_filter])
   facebook_app_id = wtf.StringField('App ID', filters=[util.strip_filter])
