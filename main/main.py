@@ -4,6 +4,7 @@ import logging
 
 from flask.ext import wtf
 import flask
+import wtforms
 
 import config
 import util
@@ -58,11 +59,11 @@ def sitemap():
 # Profile stuff
 ###############################################################################
 class ProfileUpdateForm(wtf.Form):
-  name = wtf.StringField('Name',
-      [wtf.validators.required()], filters=[util.strip_filter],
+  name = wtforms.StringField('Name',
+      [wtforms.validators.required()], filters=[util.strip_filter],
     )
-  email = wtf.StringField('Email',
-      [wtf.validators.optional(), wtf.validators.email()],
+  email = wtforms.StringField('Email',
+      [wtforms.validators.optional(), wtforms.validators.email()],
       filters=[util.email_filter],
     )
 
@@ -76,7 +77,7 @@ def profile():
 
   if form.validate_on_submit():
     email = form.email.data
-    if email and not user_db.is_email_available(email, user_db):
+    if email and not user_db.is_email_available(email, user_db.key):
       form.email.errors.append('This email is already taken.')
 
     if not form.errors:
@@ -105,14 +106,14 @@ def profile():
 # Feedback
 ###############################################################################
 class FeedbackForm(wtf.Form):
-  subject = wtf.StringField('Subject',
-      [wtf.validators.required()], filters=[util.strip_filter],
+  subject = wtforms.StringField('Subject',
+      [wtforms.validators.required()], filters=[util.strip_filter],
     )
-  message = wtf.TextAreaField('Message',
-      [wtf.validators.required()], filters=[util.strip_filter],
+  message = wtforms.TextAreaField('Message',
+      [wtforms.validators.required()], filters=[util.strip_filter],
     )
-  email = wtf.StringField('Your email (optional)',
-      [wtf.validators.optional(), wtf.validators.email()],
+  email = wtforms.StringField('Your email (optional)',
+      [wtforms.validators.optional(), wtforms.validators.email()],
       filters=[util.email_filter],
     )
 

@@ -162,8 +162,6 @@ def permission_required(permission=None, methods=None):
 @app.route('/signin/')
 def signin():
   next_url = util.get_next_url()
-  if flask.url_for('signin') in next_url:
-    next_url = flask.url_for('welcome')
 
   bitbucket_signin_url = flask.url_for('signin_bitbucket', next=next_url)
   dropbox_signin_url = flask.url_for('signin_dropbox', next=next_url)
@@ -1070,6 +1068,16 @@ def decorator_order_guard(f, decorator_name):
 
 
 def create_user_db(auth_id, name, username, email='', verified=False, **params):
+  email = email.lower()
+  if verified and email:
+    user_dbs, _ = model.User.get_dbs(email=email, verified=True, limit=2)
+    if len(user_dbs) == 1:
+      user_db = user_dbs[0]
+      user_db.auth_ids.append(auth_id)
+      user_db.put()
+      task.new_user_notification(user_db)
+      return user_db
+
   username = unidecode.unidecode(username.split('@')[0].lower()).strip()
   username = re.sub(r'[\W_]+', '.', username)
   new_username = username
@@ -1080,7 +1088,7 @@ def create_user_db(auth_id, name, username, email='', verified=False, **params):
 
   user_db = model.User(
       name=name,
-      email=email.lower(),
+      email=email,
       username=new_username,
       auth_ids=[auth_id],
       verified=verified,
@@ -1113,6 +1121,6 @@ def signin_user_db(user_db):
     flask.flash('Hello %s, welcome to %s.' % (
         user_db.name, config.CONFIG_DB.brand_name,
       ), category='success')
-    return flask.redirect(auth_params['next'])
+    return flask.redirect(util.get_next_url(auth_params['next']))
   flask.flash('Sorry, but you could not sign in.', category='danger')
   return flask.redirect(flask.url_for('signin'))
