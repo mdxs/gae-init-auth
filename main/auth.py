@@ -5,7 +5,7 @@ import functools
 import re
 
 from flask.ext import login
-from flask.ext import oauth
+from flask.ext.oauthlib import client as oauth
 from google.appengine.api import urlfetch
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -250,9 +250,7 @@ def retrieve_user_from_google(google_user):
 ###############################################################################
 twitter_oauth = oauth.OAuth()
 
-
-twitter = twitter_oauth.remote_app(
-    'twitter',
+app.config['TWITTER'] = dict(
     base_url='https://api.twitter.com/1.1/',
     request_token_url='https://api.twitter.com/oauth/request_token',
     access_token_url='https://api.twitter.com/oauth/access_token',
@@ -260,6 +258,9 @@ twitter = twitter_oauth.remote_app(
     consumer_key=config.CONFIG_DB.twitter_consumer_key,
     consumer_secret=config.CONFIG_DB.twitter_consumer_secret,
   )
+
+twitter = twitter_oauth.remote_app('twitter', app_key='TWITTER')
+twitter_oauth.init_app(app)
 
 
 @app.route('/_s/callback/twitter/oauth-authorized/')
@@ -314,8 +315,7 @@ def retrieve_user_from_twitter(response):
 ###############################################################################
 facebook_oauth = oauth.OAuth()
 
-facebook = facebook_oauth.remote_app(
-    'facebook',
+app.config['FACEBOOK'] = dict(
     base_url='https://graph.facebook.com/',
     request_token_url=None,
     access_token_url='/oauth/access_token',
@@ -324,6 +324,9 @@ facebook = facebook_oauth.remote_app(
     consumer_secret=config.CONFIG_DB.facebook_app_secret,
     request_token_params={'scope': 'email'},
   )
+
+facebook = facebook_oauth.remote_app('facebook', app_key='FACEBOOK')
+facebook_oauth.init_app(app)
 
 
 @app.route('/_s/callback/facebook/oauth-authorized/')
@@ -369,9 +372,9 @@ def retrieve_user_from_facebook(response):
 ###############################################################################
 # Bitbucket
 ###############################################################################
-bitbucket_oauth = oauth.OAuth()
+bitbucket_oauth = orgauth.OAuth()
 
-bitbucket = bitbucket_oauth.remote_app(
+app.config['BITBUCKET'] = bitbucket_oauth.remote_app(
     'bitbucket',
     base_url='https://api.bitbucket.org/1.0/',
     request_token_url='https://bitbucket.org/!api/1.0/oauth/request_token',
@@ -381,6 +384,8 @@ bitbucket = bitbucket_oauth.remote_app(
     consumer_secret=config.CONFIG_DB.bitbucket_secret,
   )
 
+bitbucket = bitbucket_oauth.remote_app('bitbucket', app_key='BITBUCKET')
+bitbucket_oauth.init_app(app)
 
 @app.route('/_s/callback/bitbucket/oauth-authorized/')
 @bitbucket.authorized_handler
@@ -426,7 +431,7 @@ def retrieve_user_from_bitbucket(response):
 ###############################################################################
 dropbox_oauth = oauth.OAuth()
 
-dropbox = dropbox_oauth.remote_app(
+app.config['DROPBOX'] = dropbox_oauth.remote_app(
     'dropbox',
     base_url='https://api.dropbox.com/1/',
     request_token_url=None,
@@ -437,6 +442,9 @@ dropbox = dropbox_oauth.remote_app(
     consumer_key=model.Config.get_master_db().dropbox_app_key,
     consumer_secret=model.Config.get_master_db().dropbox_app_secret,
   )
+
+dropbox = dropbox_oauth.remote_app('dropbox', app_key='DROPBOX')
+dropbox_oauth.init_app(app)
 
 
 @app.route('/_s/callback/dropbox/oauth-authorized/')
@@ -488,7 +496,7 @@ def retrieve_user_from_dropbox(response):
 ###############################################################################
 github_oauth = oauth.OAuth()
 
-github = github_oauth.remote_app(
+app.config['GITHUB'] = github_oauth.remote_app(
     'github',
     base_url='https://api.github.com/',
     request_token_url=None,
@@ -498,6 +506,9 @@ github = github_oauth.remote_app(
     consumer_secret=config.CONFIG_DB.github_client_secret,
     request_token_params={'scope': 'user:email'},
   )
+
+github = github_oauth.remote_app('github', app_key='GITHUB')
+github_oauth.init_app(app)
 
 
 @app.route('/_s/callback/github/oauth-authorized/')
@@ -543,7 +554,7 @@ def retrieve_user_from_github(response):
 ###############################################################################
 instagram_oauth = oauth.OAuth()
 
-instagram = instagram_oauth.remote_app(
+app.config['INSTAGRAM'] = instagram_oauth.remote_app(
     'instagram',
     base_url='https://api.instagram.com/v1',
     request_token_url=None,
@@ -554,6 +565,9 @@ instagram = instagram_oauth.remote_app(
     consumer_key=model.Config.get_master_db().instagram_client_id,
     consumer_secret=model.Config.get_master_db().instagram_client_secret,
   )
+
+instagram = instagram_oauth.remote_app('instagram', app_key='INSTAGRAM')
+instagram_oauth.init_app(app)
 
 
 @app.route('/_s/callback/instagram/oauth-authorized/')
@@ -602,7 +616,7 @@ def retrieve_user_from_instagram(response):
 ###############################################################################
 linkedin_oauth = oauth.OAuth()
 
-linkedin = linkedin_oauth.remote_app(
+app.config['LINKEDIN'] = linkedin_oauth.remote_app(
     'linkedin',
     base_url='https://api.linkedin.com/v1/',
     request_token_url=None,
@@ -617,6 +631,9 @@ linkedin = linkedin_oauth.remote_app(
         'state': util.uuid(),
       },
   )
+
+linkedin = linkedin_oauth.remote_app('linkedin', app_key='LINKEDIN')
+linkedin_oauth.init_app(app)
 
 
 @app.route('/_s/callback/linkedin/oauth-authorized/')
@@ -681,7 +698,7 @@ def retrieve_user_from_linkedin(response):
 ###############################################################################
 reddit_oauth = oauth.OAuth()
 
-reddit = reddit_oauth.remote_app(
+app.config['REDDIT'] = reddit_oauth.remote_app(
     'reddit',
     base_url='https://oauth.reddit.com/api/v1/',
     request_token_url=None,
@@ -693,6 +710,9 @@ reddit = reddit_oauth.remote_app(
     consumer_secret=model.Config.get_master_db().reddit_client_secret,
     request_token_params={'scope': 'identity', 'state': util.uuid()},
   )
+
+reddit = reddit_oauth.remote_app('reddit', app_key='REDDIT')
+reddit_oauth.init_app(app)
 
 
 def reddit_get_token():
@@ -771,7 +791,7 @@ def retrieve_user_from_reddit(response):
 ###############################################################################
 stackoverflow_oauth = oauth.OAuth()
 
-stackoverflow = stackoverflow_oauth.remote_app(
+app.config['STACKOVERFLOW'] = stackoverflow_oauth.remote_app(
     'stackoverflow',
     base_url='https://api.stackexchange.com/2.1/',
     request_token_url=None,
@@ -782,6 +802,9 @@ stackoverflow = stackoverflow_oauth.remote_app(
     consumer_secret=config.CONFIG_DB.stackoverflow_client_secret,
     request_token_params={},
   )
+
+stackoverflow = stackoverflow_oauth.remote_app('stackoverflow', app_key='STACKOVERFLOW')
+stackoverflow_oauth.init_app(app)
 
 
 @app.route('/_s/callback/stackoverflow/oauth-authorized/')
@@ -843,7 +866,7 @@ def retrieve_user_from_stackoverflow(response):
 ###############################################################################
 vk_oauth = oauth.OAuth()
 
-vk = vk_oauth.remote_app(
+app.config['VK'] = vk_oauth.remote_app(
     'vk',
     base_url='https://api.vk.com/',
     request_token_url=None,
@@ -852,6 +875,9 @@ vk = vk_oauth.remote_app(
     consumer_key=model.Config.get_master_db().vk_app_id,
     consumer_secret=model.Config.get_master_db().vk_app_secret,
   )
+
+vk = vk_oauth.remote_app('vk', app_key='VK')
+vk_oauth.init_app(app)
 
 
 @app.route('/_s/callback/vk/oauth-authorized/')
@@ -900,7 +926,7 @@ def retrieve_user_from_vk(response):
 ###############################################################################
 microsoft_oauth = oauth.OAuth()
 
-microsoft = microsoft_oauth.remote_app(
+app.config['MICROSOFT'] = microsoft_oauth.remote_app(
     'microsoft',
     base_url='https://apis.live.net/v5.0/',
     request_token_url=None,
@@ -912,6 +938,9 @@ microsoft = microsoft_oauth.remote_app(
     consumer_secret=model.Config.get_master_db().microsoft_client_secret,
     request_token_params={'scope': 'wl.emails'},
   )
+
+microsoft = microsoft_oauth.remote_app('microsoft', app_key='MICROSOFT')
+microsoft_oauth.init_app(app)
 
 
 @app.route('/_s/callback/microsoft/oauth-authorized/')
@@ -970,7 +999,7 @@ def retrieve_user_from_microsoft(response):
 ###############################################################################
 yahoo_oauth = oauth.OAuth()
 
-yahoo = yahoo_oauth.remote_app(
+app.config['YAHOO'] = yahoo_oauth.remote_app(
     'yahoo',
     base_url='https://social.yahooapis.com/',
     request_token_url='https://api.login.yahoo.com/oauth/v2/get_request_token',
@@ -980,6 +1009,8 @@ yahoo = yahoo_oauth.remote_app(
     consumer_secret=model.Config.get_master_db().yahoo_consumer_secret,
   )
 
+yahoo = yahoo_oauth.remote_app('yahoo', app_key='YAHOO')
+yahoo_oauth.init_app(app)
 
 @app.route('/_s/callback/yahoo/oauth-authorized/')
 @yahoo.authorized_handler
