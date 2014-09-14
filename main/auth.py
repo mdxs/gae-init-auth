@@ -372,10 +372,9 @@ def retrieve_user_from_facebook(response):
 ###############################################################################
 # Bitbucket
 ###############################################################################
-bitbucket_oauth = orgauth.OAuth()
+bitbucket_oauth = oauth.OAuth()
 
-app.config['BITBUCKET'] = bitbucket_oauth.remote_app(
-    'bitbucket',
+app.config['BITBUCKET'] = dict(
     base_url='https://api.bitbucket.org/1.0/',
     request_token_url='https://bitbucket.org/!api/1.0/oauth/request_token',
     access_token_url='https://bitbucket.org/!api/1.0/oauth/access_token',
@@ -431,8 +430,7 @@ def retrieve_user_from_bitbucket(response):
 ###############################################################################
 dropbox_oauth = oauth.OAuth()
 
-app.config['DROPBOX'] = dropbox_oauth.remote_app(
-    'dropbox',
+app.config['DROPBOX'] = dict(
     base_url='https://api.dropbox.com/1/',
     request_token_url=None,
     access_token_url='https://api.dropbox.com/1/oauth2/token',
@@ -496,8 +494,7 @@ def retrieve_user_from_dropbox(response):
 ###############################################################################
 github_oauth = oauth.OAuth()
 
-app.config['GITHUB'] = github_oauth.remote_app(
-    'github',
+app.config['GITHUB'] = dict(
     base_url='https://api.github.com/',
     request_token_url=None,
     access_token_url='https://github.com/login/oauth/access_token',
@@ -554,8 +551,7 @@ def retrieve_user_from_github(response):
 ###############################################################################
 instagram_oauth = oauth.OAuth()
 
-app.config['INSTAGRAM'] = instagram_oauth.remote_app(
-    'instagram',
+app.config['INSTAGRAM'] = dict(
     base_url='https://api.instagram.com/v1',
     request_token_url=None,
     access_token_url='https://api.instagram.com/oauth/access_token',
@@ -616,8 +612,7 @@ def retrieve_user_from_instagram(response):
 ###############################################################################
 linkedin_oauth = oauth.OAuth()
 
-app.config['LINKEDIN'] = linkedin_oauth.remote_app(
-    'linkedin',
+app.config['LINKEDIN'] = dict(
     base_url='https://api.linkedin.com/v1/',
     request_token_url=None,
     access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
@@ -698,8 +693,7 @@ def retrieve_user_from_linkedin(response):
 ###############################################################################
 reddit_oauth = oauth.OAuth()
 
-app.config['REDDIT'] = reddit_oauth.remote_app(
-    'reddit',
+app.config['REDDIT'] = dict(
     base_url='https://oauth.reddit.com/api/v1/',
     request_token_url=None,
     access_token_url='https://ssl.reddit.com/api/v1/access_token',
@@ -791,8 +785,7 @@ def retrieve_user_from_reddit(response):
 ###############################################################################
 stackoverflow_oauth = oauth.OAuth()
 
-app.config['STACKOVERFLOW'] = stackoverflow_oauth.remote_app(
-    'stackoverflow',
+app.config['STACKOVERFLOW'] = dict(
     base_url='https://api.stackexchange.com/2.1/',
     request_token_url=None,
     access_token_url='https://stackexchange.com/oauth/access_token',
@@ -866,8 +859,7 @@ def retrieve_user_from_stackoverflow(response):
 ###############################################################################
 vk_oauth = oauth.OAuth()
 
-app.config['VK'] = vk_oauth.remote_app(
-    'vk',
+app.config['VK'] = dict(
     base_url='https://api.vk.com/',
     request_token_url=None,
     access_token_url='https://oauth.vk.com/access_token',
@@ -926,8 +918,7 @@ def retrieve_user_from_vk(response):
 ###############################################################################
 microsoft_oauth = oauth.OAuth()
 
-app.config['MICROSOFT'] = microsoft_oauth.remote_app(
-    'microsoft',
+app.config['MICROSOFT'] = dict(
     base_url='https://apis.live.net/v5.0/',
     request_token_url=None,
     access_token_url='https://login.live.com/oauth20_token.srf',
@@ -999,8 +990,7 @@ def retrieve_user_from_microsoft(response):
 ###############################################################################
 yahoo_oauth = oauth.OAuth()
 
-app.config['YAHOO'] = yahoo_oauth.remote_app(
-    'yahoo',
+app.config['YAHOO'] = dict(
     base_url='https://social.yahooapis.com/',
     request_token_url='https://api.login.yahoo.com/oauth/v2/get_request_token',
     access_token_url='https://api.login.yahoo.com/oauth/v2/get_token',
