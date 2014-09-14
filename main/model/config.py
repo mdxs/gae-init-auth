@@ -15,6 +15,7 @@ class Config(model.Base):
   announcement_type = ndb.StringProperty(default='info', choices=[
       'info', 'warning', 'success', 'danger',
     ])
+  anonymous_recaptcha = ndb.BooleanProperty(default=False)
   bitbucket_key = ndb.StringProperty(default='')
   bitbucket_secret = ndb.StringProperty(default='')
   brand_name = ndb.StringProperty(default=config.APPLICATION_ID)
@@ -34,6 +35,8 @@ class Config(model.Base):
   microsoft_client_id = ndb.StringProperty(default='')
   microsoft_client_secret = ndb.StringProperty(default='')
   notify_on_new_user = ndb.BooleanProperty(default=True)
+  recaptcha_private_key = ndb.StringProperty(default='')
+  recaptcha_public_key = ndb.StringProperty(default='')
   reddit_client_id = ndb.StringProperty(default='')
   reddit_client_secret = ndb.StringProperty(default='')
   stackoverflow_client_id = ndb.StringProperty(default='')
@@ -56,6 +59,10 @@ class Config(model.Base):
     return bool(self.dropbox_app_key and self.dropbox_app_secret)
 
   @property
+  def has_anonymous_recaptcha(self):
+    return bool(self.anonymous_recaptcha and self.has_recaptcha)
+
+  @property
   def has_facebook(self):
     return bool(self.facebook_app_id and self.facebook_app_secret)
 
@@ -70,6 +77,10 @@ class Config(model.Base):
   @property
   def has_linkedin(self):
     return bool(self.linkedin_api_key and self.linkedin_secret_key)
+
+  @property
+  def has_recaptcha(self):
+    return bool(self.recaptcha_private_key and self.recaptcha_public_key)
 
   @property
   def has_reddit(self):
@@ -99,6 +110,7 @@ class Config(model.Base):
       'analytics_id',
       'announcement_html',
       'announcement_type',
+      'anonymous_recaptcha',
       'bitbucket_key',
       'bitbucket_secret',
       'brand_name',
@@ -118,6 +130,8 @@ class Config(model.Base):
       'microsoft_client_id',
       'microsoft_client_secret',
       'notify_on_new_user',
+      'recaptcha_private_key',
+      'recaptcha_public_key',
       'reddit_client_id',
       'reddit_client_secret',
       'stackoverflow_client_id',

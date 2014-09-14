@@ -15,7 +15,6 @@
     </p>
   </div>
 
-
   <form method="POST" action="." novalidate>
     <div class="row">
       <fieldset class="col-sm-6 col-md-5">
@@ -24,6 +23,7 @@
 
         {{forms.text_field(form.brand_name, autofocus=True)}}
         {{forms.email_field(form.feedback_email)}}
+        {{forms.checkbox_field(form.anonymous_recaptcha)}}
         {{forms.checkbox_field(form.notify_on_new_user)}}
         {{forms.checkbox_field(form.verify_email)}}
         {{forms.checkbox_field(form.check_unique_email)}}
@@ -34,7 +34,7 @@
       <fieldset class="col-sm-6 col-md-7">
         <legend>Keys</legend>
         <div class="panel-group" id="oauth">
-          # include "admin/bit/flask_secret_key.html"
+          # include "admin/bit/security.html"
           # include "admin/bit/bitbucket_oauth.html"
           # include "admin/bit/dropbox_oauth.html"
           # include "admin/bit/facebook_oauth.html"
@@ -43,6 +43,7 @@
           # include "admin/bit/instagram_oauth.html"
           # include "admin/bit/linkedin_oauth.html"
           # include "admin/bit/microsoft_oauth.html"
+          # include "admin/bit/recaptcha.html"
           # include "admin/bit/reddit_oauth.html"
           # include "admin/bit/stackoverflow_oauth.html"
           # include "admin/bit/twitter_oauth.html"
