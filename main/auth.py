@@ -697,6 +697,7 @@ app.config['REDDIT'] = dict(
     base_url='https://oauth.reddit.com/api/v1/',
     request_token_url=None,
     access_token_url='https://ssl.reddit.com/api/v1/access_token',
+    access_token_params={'grant_type': 'authorization_code'},
     access_token_method='POST',
     authorize_url='https://ssl.reddit.com/api/v1/authorize',
     consumer_key=model.Config.get_master_db().reddit_client_id,
@@ -712,22 +713,24 @@ def reddit_get_token():
   access_args = {
       'code': flask.request.args.get('code'),
       'client_id': reddit.consumer_key,
-      'client_secret': reddit.consumer_secret,
       'redirect_uri': flask.session.get(reddit.name + '_oauthredir'),
     }
   access_args.update(reddit.access_token_params)
   auth = 'Basic ' + b64encode(
       ('%s:%s' % (reddit.consumer_key, reddit.consumer_secret)).encode(
           'latin1')).strip().decode('latin1')
-  resp, content = reddit._client.request(
+  resp, content = reddit.http_request(
       reddit.expand_url(reddit.access_token_url),
-      reddit.access_token_method,
-      urls.url_encode(access_args),
-      headers={'Authorization': auth},
+      method=reddit.access_token_method,
+      data=urls.url_encode(access_args),
+      headers={
+          'Authorization': auth,
+          'User-Agent': config.USER_AGENT,
+        },
     )
 
   data = oauth.parse_response(resp, content)
-  if not reddit.status_okay(resp):
+  if resp.code not in (200, 201):
     raise oauth.OAuthException(
         'Invalid response from ' + reddit.name,
         type='invalid_response', data=data,
@@ -735,7 +738,13 @@ def reddit_get_token():
   return data
 
 
+def change_reddit_header(uri, headers, body):
+  headers['User-Agent'] = config.USER_AGENT
+  return uri, headers, body
+
+
 reddit.handle_oauth2_response = reddit_get_token
+reddit.pre_request = change_reddit_header
 
 
 @app.route('/_s/callback/reddit/oauth-authorized/')
