@@ -931,25 +931,21 @@ microsoft_oauth.init_app(app)
 
 
 @app.route('/_s/callback/microsoft/oauth-authorized/')
-@microsoft.authorized_handler
-def microsoft_authorized(resp):
+def microsoft_authorized():
+  resp = microsoft.authorized_response()
   if resp is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
   flask.session['oauth_token'] = (resp['access_token'], '')
-  me = microsoft.get(
-      'me',
-      data={'access_token': resp['access_token']},
-      headers={'accept-encoding': 'identity'},
-    ).data
-  if me.get('error'):
+  me = microsoft.get('me')
+  if me.data.get('error', {}):
     return 'Unknown error: error:%s error_description:%s' % (
-        me['code'],
-        me['message'],
+        me['error']['code'],
+        me['error']['message'],
       )
-  user_db = retrieve_user_from_microsoft(me)
+  user_db = retrieve_user_from_microsoft(me.data)
   return signin_user_db(user_db)
 
 
@@ -960,6 +956,7 @@ def get_microsoft_oauth_token():
 
 @app.route('/signin/microsoft/')
 def signin_microsoft():
+  flask.session.pop('oauth_token', None)
   save_request_params()
   return microsoft.authorize(callback=flask.url_for(
       'microsoft_authorized', _external=True
