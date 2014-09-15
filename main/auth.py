@@ -497,6 +497,7 @@ github_oauth = oauth.OAuth()
 app.config['GITHUB'] = dict(
     base_url='https://api.github.com/',
     request_token_url=None,
+    access_token_method='POST',
     access_token_url='https://github.com/login/oauth/access_token',
     authorize_url='https://github.com/login/oauth/authorize',
     consumer_key=config.CONFIG_DB.github_client_id,
@@ -509,8 +510,8 @@ github_oauth.init_app(app)
 
 
 @app.route('/_s/callback/github/oauth-authorized/')
-@github.authorized_handler
-def github_authorized(resp):
+def github_authorized():
+  resp = github.authorized_response()
   if resp is None:
     return 'Access denied: error=%s' % flask.request.args['error']
   flask.session['oauth_token'] = (resp['access_token'], '')
@@ -526,6 +527,7 @@ def get_github_oauth_token():
 
 @app.route('/signin/github/')
 def signin_github():
+  flask.session.pop('oauth_token', None)
   save_request_params()
   return github.authorize(callback=flask.url_for(
       'github_authorized', _external=True
@@ -1085,7 +1087,7 @@ def decorator_order_guard(f, decorator_name):
 
 
 def create_user_db(auth_id, name, username, email='', verified=False, **props):
-  email = email.lower()
+  email = email.lower() if email else ''
   if verified and email:
     user_dbs, user_cr = model.User.get_dbs(email=email, verified=True, limit=2)
     if len(user_dbs) == 1:
