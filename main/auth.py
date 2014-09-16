@@ -431,11 +431,11 @@ def retrieve_user_from_bitbucket(response):
 dropbox_oauth = oauth.OAuth()
 
 app.config['DROPBOX'] = dict(
-    base_url='https://api.dropbox.com/1/',
+    base_url='https://www.dropbox.com/1/',
+    request_token_params={},
     request_token_url=None,
-    access_token_url='https://api.dropbox.com/1/oauth2/token',
     access_token_method='POST',
-    access_token_params={'grant_type': 'authorization_code'},
+    access_token_url='https://api.dropbox.com/1/oauth2/token',
     authorize_url='https://www.dropbox.com/1/oauth2/authorize',
     consumer_key=model.Config.get_master_db().dropbox_app_key,
     consumer_secret=model.Config.get_master_db().dropbox_app_secret,
@@ -446,18 +446,15 @@ dropbox_oauth.init_app(app)
 
 
 @app.route('/_s/callback/dropbox/oauth-authorized/')
-@dropbox.authorized_handler
-def dropbox_authorized(resp):
+def dropbox_authorized():
+  resp = dropbox.authorized_response()
   if resp is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
   flask.session['oauth_token'] = (resp['access_token'], '')
-  me = dropbox.get(
-      'account/info',
-      headers={'Authorization': 'Bearer %s' % resp['access_token']}
-    )
+  me = dropbox.get('account/info')
   user_db = retrieve_user_from_dropbox(me.data)
   return signin_user_db(user_db)
 
@@ -469,11 +466,11 @@ def get_dropbox_oauth_token():
 
 @app.route('/signin/dropbox/')
 def signin_dropbox():
-  flask.session['oauth_token'] = None
+  flask.session.pop('oauth_token', None)
   save_request_params()
-  return dropbox.authorize(callback=re.sub(r'^http:', 'https:', flask.url_for(
-      'dropbox_authorized', _external=True
-    )))
+  return dropbox.authorize(callback=flask.url_for(
+      'dropbox_authorized', _external=True, _scheme='https'
+    ))
 
 
 def retrieve_user_from_dropbox(response):
@@ -483,9 +480,9 @@ def retrieve_user_from_dropbox(response):
     return user_db
 
   return create_user_db(
-      auth_id,
-      response['display_name'],
-      response['display_name'],
+      auth_id=auth_id,
+      name=response['display_name'],
+      username=response['display_name'],
     )
 
 
