@@ -709,11 +709,11 @@ reddit = reddit_oauth.remote_app('reddit', app_key='REDDIT')
 reddit_oauth.init_app(app)
 
 
-def reddit_get_token():
+def reddit_handle_oauth2_response():
   access_args = {
       'code': flask.request.args.get('code'),
       'client_id': reddit.consumer_key,
-      'redirect_uri': flask.session.get(reddit.name + '_oauthredir'),
+      'redirect_uri': flask.session.get('%s_oauthredir' % reddit.name),
     }
   access_args.update(reddit.access_token_params)
   auth = 'Basic ' + b64encode(
@@ -728,36 +728,26 @@ def reddit_get_token():
           'User-Agent': config.USER_AGENT,
         },
     )
-
   data = oauth.parse_response(resp, content)
   if resp.code not in (200, 201):
     raise oauth.OAuthException(
-        'Invalid response from ' + reddit.name,
+        'Invalid response from %s' % reddit.name,
         type='invalid_response', data=data,
       )
   return data
 
 
-def change_reddit_header(uri, headers, body):
-  headers['User-Agent'] = config.USER_AGENT
-  return uri, headers, body
-
-
-reddit.handle_oauth2_response = reddit_get_token
-reddit.pre_request = change_reddit_header
+reddit.handle_oauth2_response = reddit_handle_oauth2_response
 
 
 @app.route('/_s/callback/reddit/oauth-authorized/')
-@reddit.authorized_handler
-def reddit_authorized(resp):
-  if flask.request.args.get('error'):
+def reddit_authorized():
+  resp = reddit.authorized_response()
+  if resp is None or flask.request.args.get('error'):
     return 'Access denied: error=%s' % (flask.request.args['error'])
 
   flask.session['oauth_token'] = (resp['access_token'], '')
-  me = reddit.request(
-      'me',
-      headers={'Authorization': 'Bearer %s' % resp['access_token']},
-    )
+  me = reddit.request('me')
   user_db = retrieve_user_from_reddit(me.data)
   return signin_user_db(user_db)
 
@@ -769,6 +759,7 @@ def get_reddit_oauth_token():
 
 @app.route('/signin/reddit/')
 def signin_reddit():
+  flask.session.pop('oauth_token', None)
   save_request_params()
   return reddit.authorize(callback=flask.url_for(
       'reddit_authorized', _external=True
@@ -782,9 +773,9 @@ def retrieve_user_from_reddit(response):
     return user_db
 
   return create_user_db(
-      auth_id,
-      response['name'],
-      response['name'],
+      auth_id=auth_id,
+      name=response['name'],
+      username=response['name'],
     )
 
 
