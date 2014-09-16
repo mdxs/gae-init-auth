@@ -376,9 +376,9 @@ bitbucket_oauth = oauth.OAuth()
 
 app.config['BITBUCKET'] = dict(
     base_url='https://api.bitbucket.org/1.0/',
-    request_token_url='https://bitbucket.org/!api/1.0/oauth/request_token',
-    access_token_url='https://bitbucket.org/!api/1.0/oauth/access_token',
-    authorize_url='https://bitbucket.org/!api/1.0/oauth/authenticate',
+    request_token_url='https://bitbucket.org/api/1.0/oauth/request_token',
+    access_token_url='https://bitbucket.org/api/1.0/oauth/access_token',
+    authorize_url='https://bitbucket.org/api/1.0/oauth/authenticate',
     consumer_key=config.CONFIG_DB.bitbucket_key,
     consumer_secret=config.CONFIG_DB.bitbucket_secret,
   )
@@ -386,13 +386,16 @@ app.config['BITBUCKET'] = dict(
 bitbucket = bitbucket_oauth.remote_app('bitbucket', app_key='BITBUCKET')
 bitbucket_oauth.init_app(app)
 
+
 @app.route('/_s/callback/bitbucket/oauth-authorized/')
-@bitbucket.authorized_handler
-def bitbucket_authorized(resp):
+def bitbucket_authorized():
+  resp = bitbucket.authorized_response()
   if resp is None:
     return 'Access denied'
+
   flask.session['oauth_token'] = (
-      resp['oauth_token'], resp['oauth_token_secret'],
+      resp['oauth_token'],
+      resp['oauth_token_secret'],
     )
   me = bitbucket.get('user')
   user_db = retrieve_user_from_bitbucket(me.data['user'])
@@ -406,7 +409,7 @@ def get_bitbucket_oauth_token():
 
 @app.route('/signin/bitbucket/')
 def signin_bitbucket():
-  flask.session['oauth_token'] = None
+  flask.session.pop('oauth_token', None)
   save_request_params()
   return bitbucket.authorize(callback=flask.url_for(
       'bitbucket_authorized', _external=True
@@ -422,7 +425,15 @@ def retrieve_user_from_bitbucket(response):
     name = ' '.join((response['first_name'], response['last_name'])).strip()
   else:
     name = response['username']
-  return create_user_db(auth_id, name, response['username'])
+  emails = bitbucket.get('users/%s/emails' % response['username'])
+  email = ''.join([e['email'] for e in emails.data if e['primary']][0:1])
+  return create_user_db(
+      auth_id=auth_id,
+      name=name,
+      username=response['username'],
+      email=email,
+      verified=bool(email),
+    )
 
 
 ###############################################################################
