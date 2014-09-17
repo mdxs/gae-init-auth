@@ -1098,8 +1098,8 @@ def signin_oauth(oauth_app, scheme='http'):
     ))
 
 
-def url_for_signin(sevice_name, next_url):
-  return flask.url_for('signin_%s' % sevice_name, next=next_url)
+def url_for_signin(service_name, next_url):
+  return flask.url_for('signin_%s' % service_name, next=next_url)
 
 
 @ndb.toplevel
