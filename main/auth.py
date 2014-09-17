@@ -163,19 +163,19 @@ def permission_required(permission=None, methods=None):
 def signin():
   next_url = util.get_next_url()
 
-  bitbucket_signin_url = flask.url_for('signin_bitbucket', next=next_url)
-  dropbox_signin_url = flask.url_for('signin_dropbox', next=next_url)
-  facebook_signin_url = flask.url_for('signin_facebook', next=next_url)
-  github_signin_url = flask.url_for('signin_github', next=next_url)
-  google_signin_url = flask.url_for('signin_google', next=next_url)
-  instgram_signin_url = flask.url_for('signin_instagram', next=next_url)
-  linkedin_signin_url = flask.url_for('signin_linkedin', next=next_url)
-  reddit_signin_url = flask.url_for('signin_reddit', next=next_url)
-  stackoverflow_signin_url = flask.url_for('signin_stackoverflow', next=next_url)
-  twitter_signin_url = flask.url_for('signin_twitter', next=next_url)
-  vk_signin_url = flask.url_for('signin_vk', next=next_url)
-  microsoft_signin_url = flask.url_for('signin_microsoft', next=next_url)
-  yahoo_signin_url = flask.url_for('signin_yahoo', next=next_url)
+  bitbucket_signin_url = url_for_signin('bitbucket', next_url)
+  dropbox_signin_url = url_for_signin('dropbox', next_url)
+  facebook_signin_url = url_for_signin('facebook', next_url)
+  github_signin_url = url_for_signin('github', next_url)
+  google_signin_url = url_for_signin('google', next_url)
+  instgram_signin_url = url_for_signin('instagram', next_url)
+  linkedin_signin_url = url_for_signin('linkedin', next_url)
+  reddit_signin_url = url_for_signin('reddit', next_url)
+  stackoverflow_signin_url = url_for_signin('stackoverflow', next_url)
+  twitter_signin_url = url_for_signin('twitter', next_url)
+  vk_signin_url = url_for_signin('vk', next_url)
+  microsoft_signin_url = url_for_signin('microsoft', next_url)
+  yahoo_signin_url = url_for_signin('yahoo', next_url)
 
   return flask.render_template(
       'signin.html',
@@ -285,10 +285,8 @@ def get_twitter_token():
 
 @app.route('/signin/twitter/')
 def signin_twitter():
-  flask.session.pop('oauth_token', None)
-  save_request_params()
   try:
-    return twitter.authorize(callback=flask.url_for('twitter_authorized'))
+    return signin_oauth(twitter)
   except:
     flask.flash(
         'Something went wrong with Twitter sign in. Please try again.',
@@ -349,10 +347,7 @@ def get_facebook_oauth_token():
 
 @app.route('/signin/facebook/')
 def signin_facebook():
-  save_request_params()
-  return facebook.authorize(callback=flask.url_for(
-      'facebook_authorized', _external=True
-    ))
+  return signin_oauth(facebook)
 
 
 def retrieve_user_from_facebook(response):
@@ -409,11 +404,7 @@ def get_bitbucket_oauth_token():
 
 @app.route('/signin/bitbucket/')
 def signin_bitbucket():
-  flask.session.pop('oauth_token', None)
-  save_request_params()
-  return bitbucket.authorize(callback=flask.url_for(
-      'bitbucket_authorized', _external=True
-    ))
+  return signin_oauth(bitbucket)
 
 
 def retrieve_user_from_bitbucket(response):
@@ -477,11 +468,7 @@ def get_dropbox_oauth_token():
 
 @app.route('/signin/dropbox/')
 def signin_dropbox():
-  flask.session.pop('oauth_token', None)
-  save_request_params()
-  return dropbox.authorize(callback=flask.url_for(
-      'dropbox_authorized', _external=True, _scheme='https'
-    ))
+  return signin_oauth(dropbox, 'https')
 
 
 def retrieve_user_from_dropbox(response):
@@ -535,11 +522,7 @@ def get_github_oauth_token():
 
 @app.route('/signin/github/')
 def signin_github():
-  flask.session.pop('oauth_token', None)
-  save_request_params()
-  return github.authorize(callback=flask.url_for(
-      'github_authorized', _external=True
-    ))
+  return signin_oauth(github)
 
 
 def retrieve_user_from_github(response):
@@ -597,10 +580,7 @@ def get_instagram_oauth_token():
 
 @app.route('/signin/instagram/')
 def signin_instagram():
-  save_request_params()
-  return instagram.authorize(callback=flask.url_for(
-      'instagram_authorized', _external=True
-    ))
+  return signin_oauth(instagram)
 
 
 def retrieve_user_from_instagram(response):
@@ -675,11 +655,7 @@ def get_linkedin_oauth_token():
 
 @app.route('/signin/linkedin/')
 def signin_linkedin():
-  flask.session['access_token'] = None
-  save_request_params()
-  return linkedin.authorize(callback=flask.url_for(
-      'linkedin_authorized', _external=True
-    ))
+  return signin_oauth(linkedin)
 
 
 def retrieve_user_from_linkedin(response):
@@ -767,11 +743,7 @@ def get_reddit_oauth_token():
 
 @app.route('/signin/reddit/')
 def signin_reddit():
-  flask.session.pop('oauth_token', None)
-  save_request_params()
-  return reddit.authorize(callback=flask.url_for(
-      'reddit_authorized', _external=True
-    ))
+  return signin_oauth(reddit)
 
 
 def retrieve_user_from_reddit(response):
@@ -842,11 +814,7 @@ def get_stackoverflow_oauth_token():
 
 @app.route('/signin/stackoverflow/')
 def signin_stackoverflow():
-  flask.session['oauth_token'] = None
-  save_request_params()
-  return stackoverflow.authorize(callback=flask.url_for(
-      'stackoverflow_authorized', _external=True
-    ))
+  return signin_oauth(stackoverflow)
 
 
 def retrieve_user_from_stackoverflow(response):
@@ -901,10 +869,7 @@ def get_vk_oauth_token():
 
 @app.route('/signin/vk/')
 def signin_vk():
-  save_request_params()
-  return vk.authorize(callback=flask.url_for(
-      'vk_authorized', _external=True
-    ))
+  return signin_oauth(vk)
 
 
 def retrieve_user_from_vk(response):
@@ -966,11 +931,7 @@ def get_microsoft_oauth_token():
 
 @app.route('/signin/microsoft/')
 def signin_microsoft():
-  flask.session.pop('oauth_token', None)
-  save_request_params()
-  return microsoft.authorize(callback=flask.url_for(
-      'microsoft_authorized', _external=True
-    ))
+  return signin_oauth(microsoft)
 
 
 def retrieve_user_from_microsoft(response):
@@ -1043,12 +1004,8 @@ def get_yahoo_oauth_token():
 
 @app.route('/signin/yahoo/')
 def signin_yahoo():
-  save_request_params()
-  flask.session.pop('oauth_token', None)
   try:
-    return yahoo.authorize(
-        callback=flask.url_for('yahoo_authorized')
-      )
+    return signin_oauth(yahoo)
   except:
     flask.flash(
         'Something went wrong with Yahoo! sign in. Please try again.',
@@ -1131,6 +1088,18 @@ def save_request_params():
       'next': util.get_next_url(),
       'remember': util.param('remember', bool),
     }
+
+
+def signin_oauth(oauth_app, scheme='http'):
+  flask.session.pop('oauth_token', None)
+  save_request_params()
+  return oauth_app.authorize(callback=flask.url_for(
+      '%s_authorized' % oauth_app.name, _external=True, _scheme=scheme
+    ))
+
+
+def url_for_signin(service_name, next_url):
+  return flask.url_for('signin_%s' % service_name, next=next_url)
 
 
 @ndb.toplevel
