@@ -265,16 +265,16 @@ twitter_oauth.init_app(app)
 
 @app.route('/_s/callback/twitter/oauth-authorized/')
 def twitter_authorized():
-  resp = twitter.authorized_response()
-  if resp is None:
+  response = twitter.authorized_response()
+  if response is None:
     flask.flash(u'You denied the request to sign in.')
     return flask.redirect(util.get_next_url())
 
   flask.session['oauth_token'] = (
-      resp['oauth_token'],
-      resp['oauth_token_secret'],
+      response['oauth_token'],
+      response['oauth_token_secret'],
     )
-  user_db = retrieve_user_from_twitter(resp)
+  user_db = retrieve_user_from_twitter(response)
   return signin_user_db(user_db)
 
 
@@ -289,7 +289,7 @@ def signin_twitter():
     return signin_oauth(twitter)
   except:
     flask.flash(
-        'Something went wrong with Twitter sign in. Please try again.',
+        u'Something went wrong with Twitter sign in. Please try again.',
         category='danger',
       )
     return flask.redirect(flask.url_for('signin', next=util.get_next_url()))
@@ -329,12 +329,12 @@ facebook_oauth.init_app(app)
 
 @app.route('/_s/callback/facebook/oauth-authorized/')
 def facebook_authorized():
-  resp = facebook.authorized_response()
-  if resp is None:
+  response = facebook.authorized_response()
+  if response is None:
     flask.flash(u'You denied the request to sign in.')
     return flask.redirect(util.get_next_url())
 
-  flask.session['oauth_token'] = (resp['access_token'], '')
+  flask.session['oauth_token'] = (response['access_token'], '')
   me = facebook.get('/me')
   user_db = retrieve_user_from_facebook(me.data)
   return signin_user_db(user_db)
@@ -350,7 +350,7 @@ def signin_facebook():
   return signin_oauth(facebook)
 
 
-def retrieve_user_from_facebook(response):
+def retieve_user_from_facebook(response):
   auth_id = 'facebook_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -384,13 +384,13 @@ bitbucket_oauth.init_app(app)
 
 @app.route('/_s/callback/bitbucket/oauth-authorized/')
 def bitbucket_authorized():
-  resp = bitbucket.authorized_response()
-  if resp is None:
+  response = bitbucket.authorized_response()
+  if response is None:
     return 'Access denied'
 
   flask.session['oauth_token'] = (
-      resp['oauth_token'],
-      resp['oauth_token_secret'],
+      response['oauth_token'],
+      response['oauth_token_secret'],
     )
   me = bitbucket.get('user')
   user_db = retrieve_user_from_bitbucket(me.data['user'])
@@ -407,7 +407,7 @@ def signin_bitbucket():
   return signin_oauth(bitbucket)
 
 
-def retrieve_user_from_bitbucket(response):
+def retieve_user_from_bitbucket(response):
   auth_id = 'bitbucket_%s' % response['username']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -449,13 +449,13 @@ dropbox_oauth.init_app(app)
 
 @app.route('/_s/callback/dropbox/oauth-authorized/')
 def dropbox_authorized():
-  resp = dropbox.authorized_response()
-  if resp is None:
+  response = dropbox.authorized_response()
+  if response is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
-  flask.session['oauth_token'] = (resp['access_token'], '')
+  flask.session['oauth_token'] = (response['access_token'], '')
   me = dropbox.get('account/info')
   user_db = retrieve_user_from_dropbox(me.data)
   return signin_user_db(user_db)
@@ -471,7 +471,7 @@ def signin_dropbox():
   return signin_oauth(dropbox, 'https')
 
 
-def retrieve_user_from_dropbox(response):
+def retieve_user_from_dropbox(response):
   auth_id = 'dropbox_%s' % response['uid']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -506,10 +506,10 @@ github_oauth.init_app(app)
 
 @app.route('/_s/callback/github/oauth-authorized/')
 def github_authorized():
-  resp = github.authorized_response()
-  if resp is None:
+  response = github.authorized_response()
+  if response is None:
     return 'Access denied: error=%s' % flask.request.args['error']
-  flask.session['oauth_token'] = (resp['access_token'], '')
+  flask.session['oauth_token'] = (response['access_token'], '')
   me = github.get('user')
   user_db = retrieve_user_from_github(me.data)
   return signin_user_db(user_db)
@@ -525,7 +525,7 @@ def signin_github():
   return signin_oauth(github)
 
 
-def retrieve_user_from_github(response):
+def retieve_user_from_github(response):
   auth_id = 'github_%s' % str(response['id'])
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -560,13 +560,13 @@ instagram_oauth.init_app(app)
 
 @app.route('/_s/callback/instagram/oauth-authorized/')
 def instagram_authorized():
-  resp = instagram.authorized_response()
-  if resp is None:
+  response = instagram.authorized_response()
+  if response is None:
     flask.flash(u'You denied the request to sign in.')
     return flask.redirect(util.get_next_url())
 
-  flask.session['oauth_token'] = (resp['access_token'], '')
-  user_db = retrieve_user_from_instagram(resp['user'])
+  flask.session['oauth_token'] = (response['access_token'], '')
+  user_db = retrieve_user_from_instagram(response['user'])
   return signin_user_db(user_db)
 
 
@@ -580,7 +580,7 @@ def signin_instagram():
   return signin_oauth(instagram)
 
 
-def retrieve_user_from_instagram(response):
+def retieve_user_from_instagram(response):
   auth_id = 'instagram_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -618,16 +618,16 @@ linkedin_oauth.init_app(app)
 
 @app.route('/_s/callback/linkedin/oauth-authorized/')
 @linkedin.authorized_handler
-def linkedin_authorized(resp):
-  if resp is None:
+def linkedin_authorized(response):
+  if response is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
-  flask.session['access_token'] = (resp['access_token'], '')
+  flask.session['access_token'] = (response['access_token'], '')
   fields = 'id,first-name,last-name,email-address'
   profile_url = '%speople/~:(%s)?oauth2_access_token=%s' % (
-      linkedin.base_url, fields, resp['access_token'],
+      linkedin.base_url, fields, response['access_token'],
     )
   result = urlfetch.fetch(
       profile_url,
@@ -655,7 +655,7 @@ def signin_linkedin():
   return signin_oauth(linkedin)
 
 
-def retrieve_user_from_linkedin(response):
+def retieve_user_from_linkedin(response):
   auth_id = 'linkedin_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -700,7 +700,7 @@ def reddit_handle_oauth2_response():
   auth = 'Basic ' + b64encode(
       ('%s:%s' % (reddit.consumer_key, reddit.consumer_secret)).encode(
           'latin1')).strip().decode('latin1')
-  resp, content = reddit.http_request(
+  response, content = reddit.http_request(
       reddit.expand_url(reddit.access_token_url),
       method=reddit.access_token_method,
       data=urls.url_encode(access_args),
@@ -709,8 +709,8 @@ def reddit_handle_oauth2_response():
           'User-Agent': config.USER_AGENT,
         },
     )
-  data = oauth.parse_response(resp, content)
-  if resp.code not in (200, 201):
+  data = oauth.parse_response(response, content)
+  if response.code not in (200, 201):
     raise oauth.OAuthException(
         'Invalid response from %s' % reddit.name,
         type='invalid_response', data=data,
@@ -723,11 +723,11 @@ reddit.handle_oauth2_response = reddit_handle_oauth2_response
 
 @app.route('/_s/callback/reddit/oauth-authorized/')
 def reddit_authorized():
-  resp = reddit.authorized_response()
-  if resp is None or flask.request.args.get('error'):
+  response = reddit.authorized_response()
+  if response is None or flask.request.args.get('error'):
     return 'Access denied: error=%s' % (flask.request.args['error'])
 
-  flask.session['oauth_token'] = (resp['access_token'], '')
+  flask.session['oauth_token'] = (response['access_token'], '')
   me = reddit.request('me')
   user_db = retrieve_user_from_reddit(me.data)
   return signin_user_db(user_db)
@@ -743,7 +743,7 @@ def signin_reddit():
   return signin_oauth(reddit)
 
 
-def retrieve_user_from_reddit(response):
+def retieve_user_from_reddit(response):
   auth_id = 'reddit_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -778,17 +778,17 @@ stackoverflow_oauth.init_app(app)
 
 @app.route('/_s/callback/stackoverflow/oauth-authorized/')
 @stackoverflow.authorized_handler
-def stackoverflow_authorized(resp):
-  if resp is None:
+def stackoverflow_authorized(response):
+  if response is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
-  flask.session['oauth_token'] = (resp['access_token'], '')
+  flask.session['oauth_token'] = (response['access_token'], '')
   me = stackoverflow.get('me',
       data={
           'site': 'stackoverflow',
-          'access_token': resp['access_token'],
+          'access_token': response['access_token'],
           'key': config.CONFIG_DB.stackoverflow_key,
         }
     )
@@ -814,7 +814,7 @@ def signin_stackoverflow():
   return signin_oauth(stackoverflow)
 
 
-def retrieve_user_from_stackoverflow(response):
+def retieve_user_from_stackoverflow(response):
   auth_id = 'stackoverflow_%s' % response['user_id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -846,13 +846,13 @@ vk_oauth.init_app(app)
 
 @app.route('/_s/callback/vk/oauth-authorized/')
 @vk.authorized_handler
-def vk_authorized(resp):
-  if resp is None:
+def vk_authorized(response):
+  if response is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
-  access_token = resp['access_token']
+  access_token = response['access_token']
   flask.session['oauth_token'] = (access_token, '')
   me = vk.get('/method/getUserInfoEx', data={'access_token': access_token})
   user_db = retrieve_user_from_vk(me.data['response'])
@@ -869,7 +869,7 @@ def signin_vk():
   return signin_oauth(vk)
 
 
-def retrieve_user_from_vk(response):
+def retieve_user_from_vk(response):
   auth_id = 'vk_%s' % response['user_id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -904,13 +904,13 @@ microsoft_oauth.init_app(app)
 
 @app.route('/_s/callback/microsoft/oauth-authorized/')
 def microsoft_authorized():
-  resp = microsoft.authorized_response()
-  if resp is None:
+  response = microsoft.authorized_response()
+  if response is None:
     return 'Access denied: error=%s error_description=%s' % (
         flask.request.args['error'],
         flask.request.args['error_description'],
       )
-  flask.session['oauth_token'] = (resp['access_token'], '')
+  flask.session['oauth_token'] = (response['access_token'], '')
   me = microsoft.get('me')
   if me.data.get('error', {}):
     return 'Unknown error: error:%s error_description:%s' % (
@@ -931,7 +931,7 @@ def signin_microsoft():
   return signin_oauth(microsoft)
 
 
-def retrieve_user_from_microsoft(response):
+def retieve_user_from_microsoft(response):
   auth_id = 'microsoft_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -966,14 +966,14 @@ yahoo_oauth.init_app(app)
 
 @app.route('/_s/callback/yahoo/oauth-authorized/')
 def yahoo_authorized():
-  resp = yahoo.authorized_response()
-  if resp is None:
+  response = yahoo.authorized_response()
+  if response is None:
     flask.flash(u'You denied the request to sign in.')
     return flask.redirect(util.get_next_url())
 
   flask.session['oauth_token'] = (
-      resp['oauth_token'],
-      resp['oauth_token_secret'],
+      response['oauth_token'],
+      response['oauth_token_secret'],
     )
 
   try:
@@ -1048,7 +1048,7 @@ def create_user_db(auth_id, name, username, email='', verified=False, **props):
   email = email.lower() if email else ''
   if verified and email:
     user_dbs, user_cr = model.User.get_dbs(email=email, verified=True, limit=2)
-    if len(user_dbs) == 1:
+    response len(user_dbs) == 1:
       user_db = user_dbs[0]
       user_db.auth_ids.append(auth_id)
       user_db.put()
@@ -1089,7 +1089,7 @@ def save_request_params():
 def signin_oauth(oauth_app, scheme='http'):
   flask.session.pop('oauth_token', None)
   save_request_params()
-  return oauth_app.authorize(callback=flask.url_for(
+  eturn oauth_app.authorize(callback=flask.url_for(
       '%s_authorized' % oauth_app.name, _external=True, _scheme=scheme
     ))
 
