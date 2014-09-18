@@ -586,10 +586,9 @@ def retrieve_user_from_instagram(response):
   if user_db:
     return user_db
 
-  full_name = response.get('full_name', '').strip()
   return create_user_db(
       auth_id=auth_id,
-      name=full_name or response.get('username'),
+      name=response.get('full_name', '').strip() or response.get('username'),
       username=response.get('username'),
     )
 
