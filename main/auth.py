@@ -963,9 +963,10 @@ app.config['YAHOO'] = dict(
 yahoo = yahoo_oauth.remote_app('yahoo', app_key='YAHOO')
 yahoo_oauth.init_app(app)
 
+
 @app.route('/_s/callback/yahoo/oauth-authorized/')
-@yahoo.authorized_handler
-def yahoo_authorized(resp):
+def yahoo_authorized():
+  resp = yahoo.authorized_response()
   if resp is None:
     flask.flash(u'You denied the request to sign in.')
     return flask.redirect(util.get_next_url())
@@ -977,7 +978,8 @@ def yahoo_authorized(resp):
 
   try:
     yahoo_guid = yahoo.get(
-        '/v1/me/guid', data={'format': 'json', 'realm': 'yahooapis.com'}
+        '/v1/me/guid',
+        data={'format': 'json', 'realm': 'yahooapis.com'}
       ).data['guid']['value']
 
     profile = yahoo.get(
@@ -986,10 +988,11 @@ def yahoo_authorized(resp):
       ).data['profile']
   except:
     flask.flash(
-        'Something went wrong with Yahoo! sign in. Please try again.',
+        u'Something went wrong with Yahoo! sign in. Please try again.',
         category='danger',
       )
     return flask.redirect(util.get_next_url())
+
   user_db = retrieve_user_from_yahoo(profile)
   return signin_user_db(user_db)
 
@@ -1005,7 +1008,7 @@ def signin_yahoo():
     return signin_oauth(yahoo)
   except:
     flask.flash(
-        'Something went wrong with Yahoo! sign in. Please try again.',
+        u'Something went wrong with Yahoo! sign in. Please try again.',
         category='danger',
       )
     return flask.redirect(flask.url_for('signin', next=util.get_next_url()))
@@ -1016,20 +1019,16 @@ def retrieve_user_from_yahoo(response):
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
-  if response.get('givenName') or response.get('familyName'):
-    full_name = ' '.join([response['givenName'], response['familyName']]).strip()
-  else:
-    full_name = response['nickname']
-  emails = [
-      email for email in response.get('emails', []) if email.get('handle')]
-  emails.sort(key=lambda e: e.get('primary', False))
 
+  emails = [e for e in response.get('emails', []) if e.get('handle')]
+  emails.sort(key=lambda e: e.get('primary', False))
   email = emails[0]['handle'] if emails else ''
+  names = [response.get('givenName', ''), response.get('familyName', '')]
   return create_user_db(
-      auth_id,
-      full_name,
-      response['nickname'],
-      email,
+      auth_id=auth_id,
+      name=' '.join(names).strip() or response['nickname'],
+      username=response['nickname'],
+      email=email,
       verified=bool(email),
     )
 
