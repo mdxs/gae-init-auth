@@ -559,17 +559,14 @@ instagram_oauth.init_app(app)
 
 
 @app.route('/_s/callback/instagram/oauth-authorized/')
-@instagram.authorized_handler
-def instagram_authorized(resp):
+def instagram_authorized():
+  resp = instagram.authorized_response()
   if resp is None:
-    return 'Access denied: error=%s error_description=%s' % (
-        flask.request.args['error'],
-        flask.request.args['error_description'],
-      )
-  access_token = resp['access_token']
-  flask.session['oauth_token'] = (access_token, '')
-  me = resp['user']
-  user_db = retrieve_user_from_instagram(me)
+    flask.flash(u'You denied the request to sign in.')
+    return flask.redirect(util.get_next_url())
+
+  flask.session['oauth_token'] = (resp['access_token'], '')
+  user_db = retrieve_user_from_instagram(resp['user'])
   return signin_user_db(user_db)
 
 
@@ -589,10 +586,11 @@ def retrieve_user_from_instagram(response):
   if user_db:
     return user_db
 
+  full_name = response.get('full_name', '').strip()
   return create_user_db(
-      auth_id,
-      response.get('full_name', response.get('username')),
-      response.get('username'),
+      auth_id=auth_id,
+      name=full_name or response.get('username'),
+      username=response.get('username'),
     )
 
 
