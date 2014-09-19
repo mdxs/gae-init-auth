@@ -1048,7 +1048,7 @@ def create_user_db(auth_id, name, username, email='', verified=False, **props):
   email = email.lower() if email else ''
   if verified and email:
     user_dbs, user_cr = model.User.get_dbs(email=email, verified=True, limit=2)
-    response len(user_dbs) == 1:
+    if len(user_dbs) == 1:
       user_db = user_dbs[0]
       user_db.auth_ids.append(auth_id)
       user_db.put()
@@ -1089,7 +1089,7 @@ def save_request_params():
 def signin_oauth(oauth_app, scheme='http'):
   flask.session.pop('oauth_token', None)
   save_request_params()
-  eturn oauth_app.authorize(callback=flask.url_for(
+  return oauth_app.authorize(callback=flask.url_for(
       '%s_authorized' % oauth_app.name, _external=True, _scheme=scheme
     ))
 
