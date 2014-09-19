@@ -845,17 +845,22 @@ vk_oauth.init_app(app)
 
 
 @app.route('/_s/callback/vk/oauth-authorized/')
-@vk.authorized_handler
-def vk_authorized(response):
+def vk_authorized():
+  response = vk.authorized_response()
   if response is None:
-    return 'Access denied: error=%s error_description=%s' % (
-        flask.request.args['error'],
-        flask.request.args['error_description'],
-      )
+    flask.flash(u'You denied the request to sign in.')
+    return flask.redirect(util.get_next_url())
+
   access_token = response['access_token']
   flask.session['oauth_token'] = (access_token, '')
-  me = vk.get('/method/getUserInfoEx', data={'access_token': access_token})
-  user_db = retrieve_user_from_vk(me.data['response'])
+  me = vk.get(
+      '/method/users.get',
+      data={
+          'access_token': access_token,
+          'format': 'json',
+        },
+    )
+  user_db = retrieve_user_from_vk(me.data['response'][0])
   return signin_user_db(user_db)
 
 
@@ -870,15 +875,16 @@ def signin_vk():
 
 
 def retrieve_user_from_vk(response):
-  auth_id = 'vk_%s' % response['user_id']
+  auth_id = 'vk_%s' % response['uid']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
 
+  name = ' '.join((response['first_name'], response['last_name'])).strip()
   return create_user_db(
-      auth_id,
-      response['user_name'],
-      response['user_name'],
+      auth_id=auth_id,
+      name=name,
+      username=name,
     )
 
 
