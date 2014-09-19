@@ -158,6 +158,15 @@ def permission_required(permission=None, methods=None):
 ###############################################################################
 # Sign in stuff
 ###############################################################################
+def create_oauth_app(service_config, name):
+  upper_name = name.upper()
+  app.config[upper_name] = service_config
+  service_oauth = oauth.OAuth()
+  service_app = service_oauth.remote_app(name, app_key=upper_name)
+  service_oauth.init_app(app)
+  return service_app
+
+
 @app.route('/login/')
 @app.route('/signin/')
 def signin():
@@ -248,9 +257,7 @@ def retrieve_user_from_google(google_user):
 ###############################################################################
 # Twitter
 ###############################################################################
-twitter_oauth = oauth.OAuth()
-
-app.config['TWITTER'] = dict(
+twitter_config = dict(
     base_url='https://api.twitter.com/1.1/',
     request_token_url='https://api.twitter.com/oauth/request_token',
     access_token_url='https://api.twitter.com/oauth/access_token',
@@ -259,8 +266,7 @@ app.config['TWITTER'] = dict(
     consumer_secret=config.CONFIG_DB.twitter_consumer_secret,
   )
 
-twitter = twitter_oauth.remote_app('twitter', app_key='TWITTER')
-twitter_oauth.init_app(app)
+twitter = create_oauth_app(twitter_config, 'twitter')
 
 
 @app.route('/_s/callback/twitter/oauth-authorized/')
@@ -311,9 +317,7 @@ def retrieve_user_from_twitter(response):
 ###############################################################################
 # Facebook
 ###############################################################################
-facebook_oauth = oauth.OAuth()
-
-app.config['FACEBOOK'] = dict(
+facebook_config = dict(
     base_url='https://graph.facebook.com/',
     request_token_url=None,
     access_token_url='/oauth/access_token',
@@ -323,8 +327,7 @@ app.config['FACEBOOK'] = dict(
     request_token_params={'scope': 'email'},
   )
 
-facebook = facebook_oauth.remote_app('facebook', app_key='FACEBOOK')
-facebook_oauth.init_app(app)
+facebook = create_oauth_app(facebook_config, 'facebook')
 
 
 @app.route('/_s/callback/facebook/oauth-authorized/')
@@ -367,9 +370,7 @@ def retrieve_user_from_facebook(response):
 ###############################################################################
 # Bitbucket
 ###############################################################################
-bitbucket_oauth = oauth.OAuth()
-
-app.config['BITBUCKET'] = dict(
+bitbucket_config = dict(
     base_url='https://api.bitbucket.org/1.0/',
     request_token_url='https://bitbucket.org/api/1.0/oauth/request_token',
     access_token_url='https://bitbucket.org/api/1.0/oauth/access_token',
@@ -378,8 +379,7 @@ app.config['BITBUCKET'] = dict(
     consumer_secret=config.CONFIG_DB.bitbucket_secret,
   )
 
-bitbucket = bitbucket_oauth.remote_app('bitbucket', app_key='BITBUCKET')
-bitbucket_oauth.init_app(app)
+bitbucket = create_oauth_app(bitbucket_config, 'bitbucket')
 
 
 @app.route('/_s/callback/bitbucket/oauth-authorized/')
@@ -430,9 +430,7 @@ def retrieve_user_from_bitbucket(response):
 ###############################################################################
 # Dropbox
 ###############################################################################
-dropbox_oauth = oauth.OAuth()
-
-app.config['DROPBOX'] = dict(
+dropbox_config = dict(
     base_url='https://www.dropbox.com/1/',
     request_token_params={},
     request_token_url=None,
@@ -443,8 +441,7 @@ app.config['DROPBOX'] = dict(
     consumer_secret=model.Config.get_master_db().dropbox_app_secret,
   )
 
-dropbox = dropbox_oauth.remote_app('dropbox', app_key='DROPBOX')
-dropbox_oauth.init_app(app)
+dropbox = create_oauth_app(dropbox_config, 'dropbox')
 
 
 @app.route('/_s/callback/dropbox/oauth-authorized/')
@@ -487,9 +484,7 @@ def retrieve_user_from_dropbox(response):
 ###############################################################################
 # GitHub
 ###############################################################################
-github_oauth = oauth.OAuth()
-
-app.config['GITHUB'] = dict(
+github_config = dict(
     base_url='https://api.github.com/',
     request_token_url=None,
     access_token_method='POST',
@@ -500,8 +495,7 @@ app.config['GITHUB'] = dict(
     request_token_params={'scope': 'user:email'},
   )
 
-github = github_oauth.remote_app('github', app_key='GITHUB')
-github_oauth.init_app(app)
+github = create_oauth_app(github_config, 'github')
 
 
 @app.route('/_s/callback/github/oauth-authorized/')
@@ -542,9 +536,7 @@ def retrieve_user_from_github(response):
 ###############################################################################
 # Instagram
 ###############################################################################
-instagram_oauth = oauth.OAuth()
-
-app.config['INSTAGRAM'] = dict(
+instagram_config = dict(
     base_url='https://api.instagram.com/v1',
     request_token_url=None,
     access_token_url='https://api.instagram.com/oauth/access_token',
@@ -554,8 +546,7 @@ app.config['INSTAGRAM'] = dict(
     consumer_secret=model.Config.get_master_db().instagram_client_secret,
   )
 
-instagram = instagram_oauth.remote_app('instagram', app_key='INSTAGRAM')
-instagram_oauth.init_app(app)
+instagram = create_oauth_app(instagram_config, 'instagram')
 
 
 @app.route('/_s/callback/instagram/oauth-authorized/')
@@ -596,9 +587,7 @@ def retrieve_user_from_instagram(response):
 ###############################################################################
 # LinkedIn
 ###############################################################################
-linkedin_oauth = oauth.OAuth()
-
-app.config['LINKEDIN'] = dict(
+linkedin_config = dict(
     base_url='https://api.linkedin.com/v1/',
     request_token_url=None,
     access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
@@ -612,8 +601,7 @@ app.config['LINKEDIN'] = dict(
       },
   )
 
-linkedin = linkedin_oauth.remote_app('linkedin', app_key='LINKEDIN')
-linkedin_oauth.init_app(app)
+linkedin = create_oauth_app(linkedin_config, 'linkedin')
 
 
 @app.route('/_s/callback/linkedin/oauth-authorized/')
@@ -672,9 +660,7 @@ def retrieve_user_from_linkedin(response):
 ###############################################################################
 # Reddit
 ###############################################################################
-reddit_oauth = oauth.OAuth()
-
-app.config['REDDIT'] = dict(
+reddit_config = dict(
     base_url='https://oauth.reddit.com/api/v1/',
     request_token_url=None,
     access_token_url='https://ssl.reddit.com/api/v1/access_token',
@@ -686,8 +672,7 @@ app.config['REDDIT'] = dict(
     request_token_params={'scope': 'identity', 'state': util.uuid()},
   )
 
-reddit = reddit_oauth.remote_app('reddit', app_key='REDDIT')
-reddit_oauth.init_app(app)
+reddit = create_oauth_app(reddit_config, 'reddit')
 
 
 def reddit_handle_oauth2_response():
@@ -759,9 +744,7 @@ def retrieve_user_from_reddit(response):
 ###############################################################################
 # Stack Overflow
 ###############################################################################
-stackoverflow_oauth = oauth.OAuth()
-
-app.config['STACKOVERFLOW'] = dict(
+stackoverflow_config = dict(
     base_url='https://api.stackexchange.com/2.1/',
     request_token_url=None,
     access_token_url='https://stackexchange.com/oauth/access_token',
@@ -772,8 +755,7 @@ app.config['STACKOVERFLOW'] = dict(
     request_token_params={},
   )
 
-stackoverflow = stackoverflow_oauth.remote_app('stackoverflow', app_key='STACKOVERFLOW')
-stackoverflow_oauth.init_app(app)
+stackoverflow = create_oauth_app(stackoverflow_config, 'stackoverflow')
 
 
 @app.route('/_s/callback/stackoverflow/oauth-authorized/')
@@ -829,9 +811,7 @@ def retrieve_user_from_stackoverflow(response):
 ###############################################################################
 # VK
 ###############################################################################
-vk_oauth = oauth.OAuth()
-
-app.config['VK'] = dict(
+vk_config = dict(
     base_url='https://api.vk.com/',
     request_token_url=None,
     access_token_url='https://oauth.vk.com/access_token',
@@ -840,8 +820,7 @@ app.config['VK'] = dict(
     consumer_secret=model.Config.get_master_db().vk_app_secret,
   )
 
-vk = vk_oauth.remote_app('vk', app_key='VK')
-vk_oauth.init_app(app)
+vk = create_oauth_app(vk_config, 'vk')
 
 
 @app.route('/_s/callback/vk/oauth-authorized/')
@@ -885,9 +864,7 @@ def retrieve_user_from_vk(response):
 ###############################################################################
 # Microsoft
 ###############################################################################
-microsoft_oauth = oauth.OAuth()
-
-app.config['MICROSOFT'] = dict(
+microsoft_config = dict(
     base_url='https://apis.live.net/v5.0/',
     request_token_url=None,
     access_token_url='https://login.live.com/oauth20_token.srf',
@@ -898,8 +875,7 @@ app.config['MICROSOFT'] = dict(
     request_token_params={'scope': 'wl.emails'},
   )
 
-microsoft = microsoft_oauth.remote_app('microsoft', app_key='MICROSOFT')
-microsoft_oauth.init_app(app)
+microsoft = create_oauth_app(microsoft_config, 'microsoft')
 
 
 @app.route('/_s/callback/microsoft/oauth-authorized/')
@@ -949,9 +925,7 @@ def retrieve_user_from_microsoft(response):
 ###############################################################################
 # Yahoo!
 ###############################################################################
-yahoo_oauth = oauth.OAuth()
-
-app.config['YAHOO'] = dict(
+yahoo_config = dict(
     base_url='https://social.yahooapis.com/',
     request_token_url='https://api.login.yahoo.com/oauth/v2/get_request_token',
     access_token_url='https://api.login.yahoo.com/oauth/v2/get_token',
@@ -960,8 +934,7 @@ app.config['YAHOO'] = dict(
     consumer_secret=model.Config.get_master_db().yahoo_consumer_secret,
   )
 
-yahoo = yahoo_oauth.remote_app('yahoo', app_key='YAHOO')
-yahoo_oauth.init_app(app)
+yahoo = create_oauth_app(yahoo_config, 'yahoo')
 
 
 @app.route('/_s/callback/yahoo/oauth-authorized/')
