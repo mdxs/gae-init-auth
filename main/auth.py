@@ -350,7 +350,7 @@ def signin_facebook():
   return signin_oauth(facebook)
 
 
-def retieve_user_from_facebook(response):
+def retrieve_user_from_facebook(response):
   auth_id = 'facebook_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -407,7 +407,7 @@ def signin_bitbucket():
   return signin_oauth(bitbucket)
 
 
-def retieve_user_from_bitbucket(response):
+def retrieve_user_from_bitbucket(response):
   auth_id = 'bitbucket_%s' % response['username']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -471,7 +471,7 @@ def signin_dropbox():
   return signin_oauth(dropbox, 'https')
 
 
-def retieve_user_from_dropbox(response):
+def retrieve_user_from_dropbox(response):
   auth_id = 'dropbox_%s' % response['uid']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -525,7 +525,7 @@ def signin_github():
   return signin_oauth(github)
 
 
-def retieve_user_from_github(response):
+def retrieve_user_from_github(response):
   auth_id = 'github_%s' % str(response['id'])
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -580,7 +580,7 @@ def signin_instagram():
   return signin_oauth(instagram)
 
 
-def retieve_user_from_instagram(response):
+def retrieve_user_from_instagram(response):
   auth_id = 'instagram_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -655,7 +655,7 @@ def signin_linkedin():
   return signin_oauth(linkedin)
 
 
-def retieve_user_from_linkedin(response):
+def retrieve_user_from_linkedin(response):
   auth_id = 'linkedin_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -743,7 +743,7 @@ def signin_reddit():
   return signin_oauth(reddit)
 
 
-def retieve_user_from_reddit(response):
+def retrieve_user_from_reddit(response):
   auth_id = 'reddit_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -814,7 +814,7 @@ def signin_stackoverflow():
   return signin_oauth(stackoverflow)
 
 
-def retieve_user_from_stackoverflow(response):
+def retrieve_user_from_stackoverflow(response):
   auth_id = 'stackoverflow_%s' % response['user_id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -869,7 +869,7 @@ def signin_vk():
   return signin_oauth(vk)
 
 
-def retieve_user_from_vk(response):
+def retrieve_user_from_vk(response):
   auth_id = 'vk_%s' % response['user_id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
@@ -931,7 +931,7 @@ def signin_microsoft():
   return signin_oauth(microsoft)
 
 
-def retieve_user_from_microsoft(response):
+def retrieve_user_from_microsoft(response):
   auth_id = 'microsoft_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
