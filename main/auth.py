@@ -179,11 +179,11 @@ def signin():
   google_signin_url = url_for_signin('google', next_url)
   instgram_signin_url = url_for_signin('instagram', next_url)
   linkedin_signin_url = url_for_signin('linkedin', next_url)
+  microsoft_signin_url = url_for_signin('microsoft', next_url)
   reddit_signin_url = url_for_signin('reddit', next_url)
   stackoverflow_signin_url = url_for_signin('stackoverflow', next_url)
   twitter_signin_url = url_for_signin('twitter', next_url)
   vk_signin_url = url_for_signin('vk', next_url)
-  microsoft_signin_url = url_for_signin('microsoft', next_url)
   yahoo_signin_url = url_for_signin('yahoo', next_url)
 
   return flask.render_template(
@@ -197,11 +197,11 @@ def signin():
       google_signin_url=google_signin_url,
       instagram_signin_url=instgram_signin_url,
       linkedin_signin_url=linkedin_signin_url,
+      microsoft_signin_url=microsoft_signin_url,
       reddit_signin_url=reddit_signin_url,
       stackoverflow_signin_url=stackoverflow_signin_url,
       twitter_signin_url=twitter_signin_url,
       vk_signin_url=vk_signin_url,
-      microsoft_signin_url=microsoft_signin_url,
       yahoo_signin_url=yahoo_signin_url,
       next_url=next_url,
     )
@@ -245,10 +245,10 @@ def retrieve_user_from_google(google_user):
     return user_db
 
   return create_user_db(
-      auth_id,
-      util.create_name_from_email(google_user.email()),
-      google_user.email(),
-      google_user.email(),
+      auth_id=auth_id,
+      name=util.create_name_from_email(google_user.email()),
+      username=google_user.email(),
+      email=google_user.email(),
       verified=True,
       admin=users.is_current_user_admin(),
     )
@@ -304,13 +304,10 @@ def signin_twitter():
 def retrieve_user_from_twitter(response):
   auth_id = 'twitter_%s' % response['user_id']
   user_db = model.User.get_by('auth_ids', auth_id)
-  if user_db:
-    return user_db
-
-  return create_user_db(
-      auth_id,
-      response['screen_name'],
-      response['screen_name'],
+  return user_db or create_user_db(
+      auth_id=auth_id,
+      name=response['screen_name'],
+      username=response['screen_name'],
     )
 
 
@@ -356,13 +353,11 @@ def signin_facebook():
 def retrieve_user_from_facebook(response):
   auth_id = 'facebook_%s' % response['id']
   user_db = model.User.get_by('auth_ids', auth_id)
-  if user_db:
-    return user_db
-  return create_user_db(
-      auth_id,
-      response['name'],
-      response.get('username', response['name']),
-      response.get('email', ''),
+  return user_db or create_user_db(
+      auth_id=auth_id,
+      name=response['name'],
+      username=response.get('username', response['name']),
+      emaol=response.get('email', ''),
       verified=bool(response.get('email', '')),
     )
 
