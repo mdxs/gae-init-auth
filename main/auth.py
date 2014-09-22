@@ -357,7 +357,7 @@ def retrieve_user_from_facebook(response):
       auth_id=auth_id,
       name=response['name'],
       username=response.get('username', response['name']),
-      emaol=response.get('email', ''),
+      email=response.get('email', ''),
       verified=bool(response.get('email', '')),
     )
 
