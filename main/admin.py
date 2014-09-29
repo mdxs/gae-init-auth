@@ -24,6 +24,7 @@ class ConfigUpdateForm(wtf.Form):
   check_unique_email = wtforms.BooleanField('Check for the uniqueness of the verified emails')
   dropbox_app_key = wtforms.StringField('App Key', filters=[util.strip_filter])
   dropbox_app_secret = wtforms.StringField('App Secret', filters=[util.strip_filter])
+  email_authentication = wtforms.BooleanField('Email authentication for sign in/sign up')
   facebook_app_id = wtforms.StringField('App ID', filters=[util.strip_filter])
   facebook_app_secret = wtforms.StringField('App Secret', filters=[util.strip_filter])
   feedback_email = wtforms.StringField('Feedback Email', [wtforms.validators.optional(), wtforms.validators.email()], filters=[util.email_filter])
@@ -41,6 +42,7 @@ class ConfigUpdateForm(wtf.Form):
   recaptcha_public_key = wtforms.StringField('Public Key', filters=[util.strip_filter])
   reddit_client_id = wtforms.StringField('Key', filters=[util.strip_filter])
   reddit_client_secret = wtforms.StringField('Secret', filters=[util.strip_filter])
+  salt = wtforms.StringField('Salt', [wtforms.validators.optional()], filters=[util.strip_filter])
   stackoverflow_client_id = wtforms.StringField('Client Id', filters=[util.strip_filter])
   stackoverflow_client_secret = wtforms.StringField('Client Secret', filters=[util.strip_filter])
   stackoverflow_key = wtforms.StringField('Key', filters=[util.strip_filter])
@@ -63,6 +65,8 @@ def admin_config_update():
     form.populate_obj(config_db)
     if not config_db.flask_secret_key:
       config_db.flask_secret_key = util.uuid()
+    if not config_db.salt:
+      config_db.salt = util.uuid()
     config_db.put()
     reload(config)
     app.config.update(CONFIG_DB=config_db)

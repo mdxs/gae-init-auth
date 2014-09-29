@@ -22,6 +22,7 @@ class Config(model.Base):
   check_unique_email = ndb.BooleanProperty(default=True)
   dropbox_app_key = ndb.StringProperty(default='')
   dropbox_app_secret = ndb.StringProperty(default='')
+  email_authentication = ndb.BooleanProperty(default=False)
   facebook_app_id = ndb.StringProperty(default='')
   facebook_app_secret = ndb.StringProperty(default='')
   feedback_email = ndb.StringProperty(default='')
@@ -39,6 +40,7 @@ class Config(model.Base):
   recaptcha_public_key = ndb.StringProperty(default='')
   reddit_client_id = ndb.StringProperty(default='')
   reddit_client_secret = ndb.StringProperty(default='')
+  salt = ndb.StringProperty(default=util.uuid())
   stackoverflow_client_id = ndb.StringProperty(default='')
   stackoverflow_client_secret = ndb.StringProperty(default='')
   stackoverflow_key = ndb.StringProperty(default='')
@@ -61,6 +63,10 @@ class Config(model.Base):
   @property
   def has_anonymous_recaptcha(self):
     return bool(self.anonymous_recaptcha and self.has_recaptcha)
+
+  @property
+  def has_email_authentication(self):
+    return bool(self.email_authentication and self.feedback_email and self.verify_email)
 
   @property
   def has_facebook(self):
@@ -117,6 +123,7 @@ class Config(model.Base):
       'check_unique_email',
       'dropbox_app_key',
       'dropbox_app_secret',
+      'email_authentication',
       'facebook_app_id',
       'facebook_app_secret',
       'feedback_email',
@@ -134,6 +141,7 @@ class Config(model.Base):
       'recaptcha_public_key',
       'reddit_client_id',
       'reddit_client_secret',
+      'salt',
       'stackoverflow_client_id',
       'stackoverflow_client_secret',
       'stackoverflow_key',
