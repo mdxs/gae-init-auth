@@ -691,31 +691,15 @@ linkedin = create_oauth_app(linkedin_config, 'linkedin')
 
 
 @app.route('/_s/callback/linkedin/oauth-authorized/')
-@linkedin.authorized_handler
-def linkedin_authorized(response):
+def linkedin_authorized():
+  response = linkedin.authorized_response()
   if response is None:
-    return 'Access denied: error=%s error_description=%s' % (
-        flask.request.args['error'],
-        flask.request.args['error_description'],
-      )
+    flask.flash('You denied the request to sign in.')
+    return flask.redirect(util.get_next_url())
+
   flask.session['access_token'] = (response['access_token'], '')
-  fields = 'id,first-name,last-name,email-address'
-  profile_url = '%speople/~:(%s)?oauth2_access_token=%s' % (
-      linkedin.base_url, fields, response['access_token'],
-    )
-  result = urlfetch.fetch(
-      profile_url,
-      headers={'x-li-format': 'json', 'Content-Type': 'application/json'}
-    )
-  try:
-    content = flask.json.loads(result.content)
-  except ValueError:
-    return "Unknown error: invalid response from LinkedIn"
-  if result.status_code != 200:
-    return 'Unknown error: status=%s message=%s' % (
-        content['status'], content['message'],
-      )
-  user_db = retrieve_user_from_linkedin(content)
+  me = linkedin.get('people/~:(id,first-name,last-name,email-address)')
+  user_db = retrieve_user_from_linkedin(me.data)
   return signin_user_db(user_db)
 
 
@@ -734,12 +718,16 @@ def retrieve_user_from_linkedin(response):
   user_db = model.User.get_by('auth_ids', auth_id)
   if user_db:
     return user_db
-  full_name = ' '.join([response['firstName'], response['lastName']]).strip()
+
+  names = [response.get('firstName', ''), response.get('lastName', '')]
+  name = ' '.join(names).strip()
+  email = response.get('emailAddress', '')
   return create_user_db(
-      auth_id,
-      full_name,
-      response['emailAddress'] or full_name,
-      response['emailAddress'],
+      auth_id=auth_id,
+      name=name,
+      username=email or name,
+      email=email,
+      verified=bool(email),
     )
 
 
