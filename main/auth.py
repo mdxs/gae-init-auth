@@ -1006,7 +1006,7 @@ def retrieve_user_from_microsoft(response):
 # Yahoo!
 ###############################################################################
 yahoo_config = dict(
-    base_url='https://social.yahooapis.com/',
+    base_url='https://query.yahooapis.com/',
     request_token_url='https://api.login.yahoo.com/oauth/v2/get_request_token',
     access_token_url='https://api.login.yahoo.com/oauth/v2/get_token',
     authorize_url='https://api.login.yahoo.com/oauth/v2/request_auth',
@@ -1021,7 +1021,7 @@ yahoo = create_oauth_app(yahoo_config, 'yahoo')
 def yahoo_authorized():
   response = yahoo.authorized_response()
   if response is None:
-    flask.flash(u'You denied the request to sign in.')
+    flask.flash('You denied the request to sign in.')
     return flask.redirect(util.get_next_url())
 
   flask.session['oauth_token'] = (
@@ -1029,24 +1029,16 @@ def yahoo_authorized():
       response['oauth_token_secret'],
     )
 
-  try:
-    yahoo_guid = yahoo.get(
-        '/v1/me/guid',
-        data={'format': 'json', 'realm': 'yahooapis.com'}
-      ).data['guid']['value']
-
-    profile = yahoo.get(
-        '/v1/user/%s/profile' % yahoo_guid,
-        data={'format': 'json', 'realm': 'yahooapis.com'}
-      ).data['profile']
-  except:
-    flask.flash(
-        u'Something went wrong with Yahoo! sign in. Please try again.',
-        category='danger',
-      )
-    return flask.redirect(util.get_next_url())
-
-  user_db = retrieve_user_from_yahoo(profile)
+  fields = 'guid, emails, familyName, givenName, nickname'
+  me = yahoo.get(
+      '/v1/yql',
+      data={
+          'format': 'json',
+          'q': 'select %s from social.profile where guid = me;' % fields,
+          'realm': 'yahooapis.com',
+        },
+    )
+  user_db = retrieve_user_from_yahoo(me.data['query']['results']['profile'])
   return signin_user_db(user_db)
 
 
@@ -1061,7 +1053,7 @@ def signin_yahoo():
     return signin_oauth(yahoo)
   except:
     flask.flash(
-        u'Something went wrong with Yahoo! sign in. Please try again.',
+        'Something went wrong with Yahoo! sign in. Please try again.',
         category='danger',
       )
     return flask.redirect(flask.url_for('signin', next=util.get_next_url()))
@@ -1073,10 +1065,13 @@ def retrieve_user_from_yahoo(response):
   if user_db:
     return user_db
 
-  emails = [e for e in response.get('emails', []) if e.get('handle')]
-  emails.sort(key=lambda e: e.get('primary', False))
-  email = emails[0]['handle'] if emails else ''
   names = [response.get('givenName', ''), response.get('familyName', '')]
+  emails = response.get('emails', {})
+  if not isinstance(emails, list):
+    emails = [emails]
+  emails = [e for e in emails if e.has_key('handle')]
+  emails.sort(key=lambda e: e.get('primary', False))
+  email = emails[0]['handle'] if emails else ''  
   return create_user_db(
       auth_id=auth_id,
       name=' '.join(names).strip() or response['nickname'],
