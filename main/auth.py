@@ -1069,9 +1069,9 @@ def retrieve_user_from_yahoo(response):
   emails = response.get('emails', {})
   if not isinstance(emails, list):
     emails = [emails]
-  emails = [e for e in emails if e.has_key('handle')]
+  emails = [e for e in emails if 'handle' in e]
   emails.sort(key=lambda e: e.get('primary', False))
-  email = emails[0]['handle'] if emails else ''  
+  email = emails[0]['handle'] if emails else ''
   return create_user_db(
       auth_id=auth_id,
       name=' '.join(names).strip() or response['nickname'],
