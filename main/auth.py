@@ -816,10 +816,10 @@ def retrieve_user_from_reddit(response):
 
 
 ###############################################################################
-# Stack Overflow
+# Stack Overflow (via Stack Exchange)
 ###############################################################################
 stackoverflow_config = dict(
-    base_url='https://api.stackexchange.com/2.1/',
+    base_url='https://api.stackexchange.com/2.2/',
     request_token_url=None,
     access_token_url='https://stackexchange.com/oauth/access_token',
     access_token_method='POST',
@@ -833,29 +833,24 @@ stackoverflow = create_oauth_app(stackoverflow_config, 'stackoverflow')
 
 
 @app.route('/_s/callback/stackoverflow/oauth-authorized/')
-@stackoverflow.authorized_handler
-def stackoverflow_authorized(response):
+def stackoverflow_authorized():
+  response = stackoverflow.authorized_response()
   if response is None:
-    return 'Access denied: error=%s error_description=%s' % (
-        flask.request.args['error'],
-        flask.request.args['error_description'],
-      )
+    flask.flash('You denied the request to sign in.')
+    return flask.redirect(util.get_next_url())
+
   flask.session['oauth_token'] = (response['access_token'], '')
-  me = stackoverflow.get('me',
+  me = stackoverflow.get(
+      '/me',
       data={
-          'site': 'stackoverflow',
           'access_token': response['access_token'],
           'key': config.CONFIG_DB.stackoverflow_key,
-        }
+          'site': 'stackoverflow',
+        },
     )
-  if me.data.get('error_id'):
-    return 'Error: error_id=%s error_name=%s error_description=%s' % (
-        me.data['error_id'],
-        me.data['error_name'],
-        me.data['error_message'],
-      )
   if not me.data.get('items') or not me.data['items'][0]:
-    return 'Unknown error, invalid server response: %s' % me.data
+    return 'Missing account details for Stack Overflow.'
+
   user_db = retrieve_user_from_stackoverflow(me.data['items'][0])
   return signin_user_db(user_db)
 
@@ -876,9 +871,9 @@ def retrieve_user_from_stackoverflow(response):
   if user_db:
     return user_db
   return create_user_db(
-      auth_id,
-      response['display_name'],
-      response['display_name'],
+      auth_id=auth_id,
+      name=response['display_name'],
+      username=response['display_name'],
     )
 
 
